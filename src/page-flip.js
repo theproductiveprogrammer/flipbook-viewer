@@ -38,7 +38,7 @@ function setupCanvas(pages, cb) {
   canvas.width = box.width
   canvas.height = box.height
 
-  pages(0, (err, pg) => {
+  pages(1, (err, pg) => {
     if(err) return console.error(err)
     calcDisplay(box, pg, display => {
       cb({
@@ -86,18 +86,38 @@ function setupToolbar(pages, canvas, cb) {
 
 
 function showFirstPage(canvas, pages) {
-  pages(0, (err, pg) => {
+  showPages(canvas, pages, 0)
+}
+
+function showPages(canvas, pages, num) {
+  const left = num * 2
+  const right = left + 1
+  canvas.ctx.save()
+  show_bg_1()
+  show_bx_1()
+  pages(left, (err, left) => {
     if(err) return console.error(err)
-    canvas.ctx.save()
-    canvas.ctx.fillStyle = "#aaa"
-    canvas.ctx.fillRect(0, 0, canvas.box.width, canvas.box.height)
-    canvas.ctx.restore()
-    let loc = canvas.display.page_l
-    canvas.ctx.save()
+    if(left) show_pg_1(left, canvas.display.page_l)
+    pages(right, (err, right) => {
+      if(err) return console.error(err)
+      if(right) show_pg_1(right, canvas.display.page_r)
+      canvas.ctx.restore()
+    })
+  })
+
+  function show_pg_1(pg, loc) {
+    canvas.ctx.drawImage(pg.img, loc.left, loc.top, loc.width, loc.height)
+  }
+
+  function show_bx_1() {
+    const loc = canvas.display.page_l
     canvas.ctx.fillStyle = "#666"
     const border = 4
     canvas.ctx.fillRect(loc.left - border, loc.top-border, (loc.width+border)*2, loc.height+2*border)
-    loc = canvas.display.page_r
-    canvas.ctx.drawImage(pg.img, loc.left, loc.top, loc.width, loc.height)
-  })
+  }
+
+  function show_bg_1() {
+    canvas.ctx.fillStyle = "#aaa"
+    canvas.ctx.fillRect(0, 0, canvas.box.width, canvas.box.height)
+  }
 }
