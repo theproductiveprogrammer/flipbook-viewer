@@ -2,7 +2,7 @@
 const path = require('path')
 
 module.exports = {
-  entry: './src/page-flip.js',
+  entry: './src/index.js',
   output: {
     filename: 'page-flip.js',
     path: path.resolve(__dirname, 'dist'),
