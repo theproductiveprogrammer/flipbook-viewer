@@ -20,7 +20,7 @@ export function init(id, pages) {
 
       e.c(
         ctx.canvas.e,
-        toolbar.e,
+        ctx.toolbar.e,
       )
 
       ctx.showNdx = 0
@@ -88,12 +88,26 @@ function calcLayout(box, pg, cb) {
 
 function setupToolbar(ctx, cb) {
   const toolbar = h(".toolbar", "tool bar")
-  const zoom = h("span", {
+  const nxt = h("span", {
     onclick: () => {
+      ctx.showNdx++
+      showPages(ctx)
+    },
+    style: {
+      cursor: "pointer",
     }
-  }, "+")
+  }, ">")
+  const prv = h("span", {
+    onclick: () => {
+      ctx.showNdx--
+      showPages(ctx)
+    },
+    style: {
+      cursor: "pointer",
+    }
+  }, "<")
   toolbar.c(
-    zoom
+    prv, nxt
   )
 
   ctx.toolbar = {
