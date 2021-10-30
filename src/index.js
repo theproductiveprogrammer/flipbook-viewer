@@ -19,8 +19,9 @@ function pageFn() {
   ]
 
   return (n, cb) => {
+    if(!n) return cb()
     const img = new Image()
-    img.src = pages[n]
+    img.src = pages[n-1]
     img.addEventListener("load", () => {
       cb(null, {
         img,
