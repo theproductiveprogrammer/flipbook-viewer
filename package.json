@@ -1,0 +1,22 @@
+{
+  "name": "page-flip",
+  "version": "0.1.0",
+  "description": "Amazing Page Flip Animation",
+  "main": "main.js",
+  "scripts": {
+    "test": "webpack serve --open"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/theproductiveprogrammer/page-flip.git"
+  },
+  "keywords": [
+    "page-flip"
+  ],
+  "author": "charles.lobo@gmail.com",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/theproductiveprogrammer/page-flip/issues"
+  },
+  "homepage": "https://github.com/theproductiveprogrammer/page-flip#readme"
+}
