@@ -72,19 +72,14 @@ function calcLayout(box, pg, cb) {
     width = maxwidth
     height = (pg.height) * (width / (pg.width * 2))
   }
-  const page_l = {
+  const layout = {
     top: (box.height - height) / 2,
     left: (box.width - width) / 2,
-    width: width / 2,
+    mid: box.width / 2,
+    width: width,
     height,
   }
-  const page_r = {
-    top: (box.height - height) / 2,
-    left: box.width / 2,
-    width: width / 2,
-    height,
-  }
-  cb({ page_l, page_r })
+  cb(layout)
 }
 
 function setupToolbar(ctx, cb) {
@@ -129,43 +124,51 @@ function setupToolbar(ctx, cb) {
 function showPages(ctx) {
   const canvas = ctx.canvas
   const pages = ctx.pages
-  const layout = ctx.layout
   const left = ctx.showNdx * 2
   const right = left + 1
   canvas.ctx.save()
   show_bg_1()
-  if(!ctx.zoom) show_bx_1()
   pages(left, (err, left) => {
     if(err) return console.error(err)
-    if(left) show_pg_1(left, layout.page_l)
     pages(right, (err, right) => {
       if(err) return console.error(err)
-      if(right) show_pg_1(right, layout.page_r)
+
+      let layout = ctx.layout
+
+      if(!ctx.zoom) show_bx_1()
+      else {
+        layout = Object.assign({}, layout)
+        const zoom = 1 + (ctx.zoom * 0.2)
+        const width = layout.width * zoom
+        const height = layout.height * zoom
+        const left = layout.left - (width - layout.width) / 2
+        const top = layout.top - (height - layout.height) / 2
+        layout.width = width
+        layout.height = height
+        layout.left = left
+        layout.top = top
+      }
+      const page_l = Object.assign({}, layout)
+      const page_r = Object.assign({}, layout)
+      page_l.width /= 2
+      page_r.width /= 2
+      page_r.left = layout.mid
+      if(left) show_pg_1(left, page_l)
+      if(right) show_pg_1(right, page_r)
+
       canvas.ctx.restore()
     })
   })
 
   function show_pg_1(pg, loc) {
-    if(ctx.zoom) {
-      loc = Object.assign({}, loc)
-      const zoom = 1 + (ctx.zoom * 0.2)
-      const width = loc.width * zoom
-      const height = loc.height * zoom
-      const left = loc.left - (width - loc.width) / 2
-      const top = loc.top - (height - loc.height) / 2
-      loc.width = width
-      loc.height = height
-      loc.left = left
-      loc.top = top
-    }
     canvas.ctx.drawImage(pg.img, loc.left, loc.top, loc.width, loc.height)
   }
 
   function show_bx_1() {
-    const loc = layout.page_l
+    const loc = ctx.layout
     canvas.ctx.fillStyle = "#666"
     const border = 4
-    canvas.ctx.fillRect(loc.left - border, loc.top-border, (loc.width+border)*2, loc.height+2*border)
+    canvas.ctx.fillRect(loc.left - border, loc.top-border, loc.width+border*2, loc.height+2*border)
   }
 
   function show_bg_1() {
