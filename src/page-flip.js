@@ -84,22 +84,13 @@ function calcLayout(box, pg, cb) {
 
 function setupToolbar(ctx, cb) {
   const toolbar = h(".toolbar", "tool bar")
-  const style = {
-    cursor: "pointer",
-    "user-select": "none",
-    "opacity": "1",
-  }
+
   const nxt = nxt_1()
   const prv = prv_1()
   enable_disable_1()
 
-  const zoom = h("span", {
-    onclick: () => {
-      ctx.zoom++
-      showPages(ctx)
-    },
-    style
-  }, "+")
+  const zoom = zoom_1()
+
   toolbar.c(
     prv, nxt, zoom
   )
@@ -111,6 +102,11 @@ function setupToolbar(ctx, cb) {
   cb()
 
   function enable_disable_1() {
+    const enabled = {
+      cursor: "pointer",
+      "user-select": "none",
+      "opacity": "1",
+    }
     const disabled = {
       cursor: "not-allowed",
       "user-select": "none",
@@ -119,12 +115,12 @@ function setupToolbar(ctx, cb) {
     if(!ctx.showNdx || ctx.pagefn.numPages() <= 1) {
       prv.attr({ style: disabled })
     } else {
-      prv.attr({ style })
+      prv.attr({ style: enabled })
     }
     if((ctx.showNdx * 2 + 1) >= ctx.pagefn.numPages()) {
       nxt.attr({ style: disabled })
     } else {
-      nxt.attr({ style })
+      nxt.attr({ style: enabled })
     }
   }
 
@@ -135,8 +131,7 @@ function setupToolbar(ctx, cb) {
         ctx.showNdx++
         enable_disable_1()
         showPages(ctx)
-      },
-      style
+      }
     }, ">")
   }
 
@@ -147,9 +142,23 @@ function setupToolbar(ctx, cb) {
         ctx.showNdx--
         enable_disable_1()
         showPages(ctx)
-      },
-      style
+      }
     }, "<")
+  }
+
+  function zoom_1() {
+    return h("span", {
+      onclick: () => {
+        ctx.zoom++
+        if(ctx.zoom > 4) ctx.zoom = 0
+        showPages(ctx)
+      },
+      style : {
+        "cursor": "pointer",
+        "cursor": "zoom-in",
+        "user-select": "none",
+      }
+    }, "+")
   }
 }
 
@@ -173,7 +182,7 @@ function showPages(ctx) {
 
     if(ctx.zoom > 0) {
       layout = Object.assign({}, layout)
-      const zoom = ctx.zoom * 0.2
+      const zoom = ctx.zoom * 0.5
       layout.left = layout.left - layout.width * zoom / 2
       layout.top = layout.top - layout.height * zoom / 2
       layout.width = layout.width * (1 + zoom)
