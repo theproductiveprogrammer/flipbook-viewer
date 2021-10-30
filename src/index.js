@@ -18,17 +18,27 @@ function pageFn() {
     '/5.png',
   ]
 
-  return (n, cb) => {
-    if(!n) return cb()
+  const imgs = []
+
+  return {
+    get,
+  }
+
+
+  function get(n, cb) {
+    if(!n || n > pages.length) return cb()
+    if(imgs[n]) return cb(null, imgs[n])
+
     const img = new Image()
     img.src = pages[n-1]
     img.addEventListener("load", () => {
-      cb(null, {
+      imgs[n] = {
         img,
         num: n,
         width: img.width,
         height: img.height,
-      })
+      }
+      cb(null, imgs[n])
     }, false)
   }
 }

@@ -5,11 +5,11 @@ import { h, getH } from '@tpp/htm-x'
  * set up the canvas and the toolbar, then show the
  * first page
  */
-export function init(id, pages) {
+export function init(id, pagefn) {
   const e = getH(id)
 
   const ctx = {
-    pages
+    pagefn
   }
 
   setupCanvas(ctx, err => {
@@ -51,7 +51,7 @@ function setupCanvas(ctx, cb) {
 
   ctx.canvas = canvas
 
-  ctx.pages(1, (err, pg) => {
+  ctx.pagefn.get(1, (err, pg) => {
     if(err) return cb(err)
     calcLayout(canvas.box, pg, layout => {
       ctx.layout = layout
@@ -123,49 +123,47 @@ function setupToolbar(ctx, cb) {
 
 function showPages(ctx) {
   const canvas = ctx.canvas
-  const pages = ctx.pages
   const left = ctx.showNdx * 2
   const right = left + 1
   canvas.ctx.save()
   show_bg_1()
-  pages(left, (err, left) => {
+  ctx.pagefn.get(left, (err, left) => {
     if(err) return console.error(err)
-    pages(right, (err, right) => {
+    ctx.pagefn.get(right, (err, right) => {
       if(err) return console.error(err)
-
-      let layout = ctx.layout
-
-      if(!ctx.zoom) show_bx_1()
-      else {
-        layout = Object.assign({}, layout)
-        const zoom = 1 + (ctx.zoom * 0.2)
-        const width = layout.width * zoom
-        const height = layout.height * zoom
-        const left = layout.left - (width - layout.width) / 2
-        const top = layout.top - (height - layout.height) / 2
-        layout.width = width
-        layout.height = height
-        layout.left = left
-        layout.top = top
-      }
-      const page_l = Object.assign({}, layout)
-      const page_r = Object.assign({}, layout)
-      page_l.width /= 2
-      page_r.width /= 2
-      page_r.left = layout.mid
-      if(left) show_pg_1(left, page_l)
-      if(right) show_pg_1(right, page_r)
-
-      canvas.ctx.restore()
+      show_pgs_1(left, right, () => canvas.ctx.restore())
     })
   })
+
+  function show_pgs_1(left, right, cb) {
+    let layout = ctx.layout
+
+    if(ctx.zoom > 0) {
+      layout = Object.assign({}, layout)
+      const zoom = ctx.zoom * 0.2
+      layout.left = layout.left - layout.width * zoom / 2
+      layout.top = layout.top - layout.height * zoom / 2
+      layout.width = layout.width * (1 + zoom)
+      layout.height = layout.height * (1 + zoom)
+    }
+
+    show_bx_1(layout)
+
+    const page_l = Object.assign({}, layout)
+    const page_r = Object.assign({}, layout)
+    page_l.width /= 2
+    page_r.width /= 2
+    page_r.left = layout.mid
+    if(left) show_pg_1(left, page_l)
+    if(right) show_pg_1(right, page_r)
+    cb()
+  }
 
   function show_pg_1(pg, loc) {
     canvas.ctx.drawImage(pg.img, loc.left, loc.top, loc.width, loc.height)
   }
 
-  function show_bx_1() {
-    const loc = ctx.layout
+  function show_bx_1(loc) {
     canvas.ctx.fillStyle = "#666"
     const border = 4
     canvas.ctx.fillRect(loc.left - border, loc.top-border, loc.width+border*2, loc.height+2*border)
