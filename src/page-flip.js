@@ -23,6 +23,7 @@ export function init(id, pages) {
         ctx.toolbar.e,
       )
 
+      ctx.zoom = 0
       ctx.showNdx = 0
       showPages(ctx)
 
@@ -88,26 +89,33 @@ function calcLayout(box, pg, cb) {
 
 function setupToolbar(ctx, cb) {
   const toolbar = h(".toolbar", "tool bar")
+  const style = {
+    cursor: "pointer",
+    "user-select": "none",
+  }
   const nxt = h("span", {
     onclick: () => {
       ctx.showNdx++
       showPages(ctx)
     },
-    style: {
-      cursor: "pointer",
-    }
+    style
   }, ">")
   const prv = h("span", {
     onclick: () => {
       ctx.showNdx--
       showPages(ctx)
     },
-    style: {
-      cursor: "pointer",
-    }
+    style
   }, "<")
+  const zoom = h("span", {
+    onclick: () => {
+      ctx.zoom++
+      showPages(ctx)
+    },
+    style
+  }, "+")
   toolbar.c(
-    prv, nxt
+    prv, nxt, zoom
   )
 
   ctx.toolbar = {
@@ -126,7 +134,7 @@ function showPages(ctx) {
   const right = left + 1
   canvas.ctx.save()
   show_bg_1()
-  show_bx_1()
+  if(!ctx.zoom) show_bx_1()
   pages(left, (err, left) => {
     if(err) return console.error(err)
     if(left) show_pg_1(left, layout.page_l)
@@ -138,6 +146,18 @@ function showPages(ctx) {
   })
 
   function show_pg_1(pg, loc) {
+    if(ctx.zoom) {
+      loc = Object.assign({}, loc)
+      const zoom = 1 + (ctx.zoom * 0.2)
+      const width = loc.width * zoom
+      const height = loc.height * zoom
+      const left = loc.left - (width - loc.width) / 2
+      const top = loc.top - (height - loc.height) / 2
+      loc.width = width
+      loc.height = height
+      loc.left = left
+      loc.top = top
+    }
     canvas.ctx.drawImage(pg.img, loc.left, loc.top, loc.width, loc.height)
   }
 
