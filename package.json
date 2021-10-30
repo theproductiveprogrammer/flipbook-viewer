@@ -4,6 +4,7 @@
   "description": "Amazing Page Flip Animation",
   "main": "main.js",
   "scripts": {
+    "start": "webpack build",
     "test": "webpack serve --open"
   },
   "repository": {
@@ -18,5 +19,10 @@
   "bugs": {
     "url": "https://github.com/theproductiveprogrammer/page-flip/issues"
   },
-  "homepage": "https://github.com/theproductiveprogrammer/page-flip#readme"
+  "homepage": "https://github.com/theproductiveprogrammer/page-flip#readme",
+  "devDependencies": {
+    "webpack": "^5.61.0",
+    "webpack-cli": "^4.9.1",
+    "webpack-dev-server": "^4.4.0"
+  }
 }
