@@ -87,21 +87,12 @@ function setupToolbar(ctx, cb) {
   const style = {
     cursor: "pointer",
     "user-select": "none",
+    "opacity": "1",
   }
-  const nxt = h("span", {
-    onclick: () => {
-      ctx.showNdx++
-      showPages(ctx)
-    },
-    style
-  }, ">")
-  const prv = h("span", {
-    onclick: () => {
-      ctx.showNdx--
-      showPages(ctx)
-    },
-    style
-  }, "<")
+  const nxt = nxt_1()
+  const prv = prv_1()
+  enable_disable_1()
+
   const zoom = h("span", {
     onclick: () => {
       ctx.zoom++
@@ -118,6 +109,48 @@ function setupToolbar(ctx, cb) {
   }
 
   cb()
+
+  function enable_disable_1() {
+    const disabled = {
+      cursor: "not-allowed",
+      "user-select": "none",
+      opacity: "0.5",
+    }
+    if(!ctx.showNdx || ctx.pagefn.numPages() <= 1) {
+      prv.attr({ style: disabled })
+    } else {
+      prv.attr({ style })
+    }
+    if((ctx.showNdx * 2 + 1) >= ctx.pagefn.numPages()) {
+      nxt.attr({ style: disabled })
+    } else {
+      nxt.attr({ style })
+    }
+  }
+
+  function nxt_1() {
+    return h("span", {
+      onclick: () => {
+        if((ctx.showNdx * 2 + 1) >= ctx.pagefn.numPages()) return
+        ctx.showNdx++
+        enable_disable_1()
+        showPages(ctx)
+      },
+      style
+    }, ">")
+  }
+
+  function prv_1() {
+    return h("span", {
+      onclick: () => {
+        if(!ctx.showNdx || ctx.pagefn.numPages() <= 1) return
+        ctx.showNdx--
+        enable_disable_1()
+        showPages(ctx)
+      },
+      style
+    }, "<")
+  }
 }
 
 

@@ -21,6 +21,7 @@ function pageFn() {
   const imgs = []
 
   return {
+    numPages: () => pages.length,
     get,
   }
 
