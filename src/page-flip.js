@@ -56,7 +56,6 @@ function setupCanvas(pages, cb) {
  * enough space for two pages.
  */
 function calcDisplay(box, pg, cb) {
-  console.log(99, box, pg)
   let height = box.height * 0.8
   let width = (pg.width * 2) * (height / pg.height)
   const maxwidth = box.width * 0.8
@@ -93,7 +92,12 @@ function showFirstPage(canvas, pages) {
     canvas.ctx.fillStyle = "#aaa"
     canvas.ctx.fillRect(0, 0, canvas.box.width, canvas.box.height)
     canvas.ctx.restore()
-    const pg_ = canvas.display.page_r
-    canvas.ctx.drawImage(pg.img, pg_.left, pg_.top, pg_.width, pg_.height)
+    let loc = canvas.display.page_l
+    canvas.ctx.save()
+    canvas.ctx.fillStyle = "#666"
+    const border = 4
+    canvas.ctx.fillRect(loc.left - border, loc.top-border, (loc.width+border)*2, loc.height+2*border)
+    loc = canvas.display.page_r
+    canvas.ctx.drawImage(pg.img, loc.left, loc.top, loc.width, loc.height)
   })
 }
