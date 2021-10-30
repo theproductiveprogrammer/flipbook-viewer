@@ -6,9 +6,10 @@ import { h, getH } from '@tpp/htm-x'
  * first page
  */
 export function init(id, pagefn) {
-  const e = getH(id)
+  const app = getH(id)
 
   const ctx = {
+    app,
     pagefn
   }
 
@@ -18,10 +19,12 @@ export function init(id, pagefn) {
     setupToolbar(ctx, err => {
       if(err) return console.error(err)
 
-      e.c(
+      app.c(
         ctx.canvas.e,
         ctx.toolbar.e,
       )
+
+      setupMouseHandler(ctx)
 
       ctx.zoom = 0
       ctx.showNdx = 0
@@ -53,7 +56,7 @@ function setupCanvas(ctx, cb) {
 
   ctx.pagefn.get(1, (err, pg) => {
     if(err) return cb(err)
-    calcLayout(canvas.box, pg, layout => {
+    calcInitialLayout(canvas.box, pg, layout => {
       ctx.layout = layout
       cb()
     })
@@ -64,7 +67,7 @@ function setupCanvas(ctx, cb) {
  * keep a 10% margin on the closest side and
  * enough space for two pages.
  */
-function calcLayout(box, pg, cb) {
+function calcInitialLayout(box, pg, cb) {
   let height = box.height * 0.8
   let width = (pg.width * 2) * (height / pg.height)
   const maxwidth = box.width * 0.8
@@ -162,6 +165,7 @@ function setupToolbar(ctx, cb) {
         let zoom = ctx.zoom + 1
         if(zoom > 4) {
           ctx.zoom = 0
+          ctx.pan = null
           showPages(ctx)
         } else {
           animate({
@@ -185,6 +189,118 @@ function setupToolbar(ctx, cb) {
   }
 }
 
+function setupMouseHandler(ctx) {
+  const handlers = [
+    setupPanning(ctx),
+  ]
+
+  const events = [
+    "onmouseenter", "onmouseleave",
+    "onmousemove",
+    "onclick",
+    "onmousedown", "onmouseup",
+  ]
+
+  const attr = {}
+  events.map(e => {
+    attr[e] = evt => {
+      handlers.map(h => {
+        if(h[e]) h[e](evt)
+      })
+    }
+  })
+
+  ctx.app.attr(attr)
+}
+
+function setupPanning(ctx) {
+  let start
+
+  function onmouseleave(evt) {
+    start = null
+  }
+
+  function onmousedown(evt) {
+    if(!ctx.zoom) return
+    start = mousePt(ctx, evt)
+    if(ctx.pan) {
+      start.x -= ctx.pan.x
+      start.y -= ctx.pan.y
+    }
+  }
+
+  function onmouseup(evt) {
+    start = null
+  }
+
+  function onmousemove(evt) {
+    const pt = mousePt(ctx, evt)
+    if(start && inBox(ctx, pt)) {
+      ctx.pan = {
+        x: (pt.x - start.x),
+        y: (pt.y - start.y),
+      }
+      showPages(ctx)
+    } else {
+      start = null
+    }
+  }
+
+  return {
+    onmouseleave,
+    onmousedown,
+    onmouseup,
+    onmousemove,
+  }
+
+}
+
+function inBox(ctx, pt) {
+  const rt = currRect(ctx)
+  return (rt.top <= pt.y && rt.bottom >= pt.y &&
+          rt.left <= pt.x && rt.right >= pt.x)
+}
+
+function mousePt(ctx, evt) {
+  const rect = ctx.app.getBoundingClientRect()
+  return {
+    x: evt.clientX - rect.x,
+    y: evt.clientY - rect.y
+  }
+}
+
+function currRect(ctx) {
+  const l = calcLayout(ctx)
+  return {
+    top: l.top,
+    left: l.left,
+    bottom: l.top + l.height,
+    right: l.left + l.width,
+  }
+}
+
+function calcLayout(ctx) {
+  let layout = ctx.layout
+
+  if(ctx.zoom > 0) {
+    layout = Object.assign({}, layout)
+    if(ctx.zoom) {
+      const zoom = ctx.zoom * 0.5
+      layout.left = layout.left - layout.width * zoom / 2
+      layout.top = layout.top - layout.height * zoom / 2
+      layout.width = layout.width * (1 + zoom)
+      layout.height = layout.height * (1 + zoom)
+    }
+    if(ctx.pan) {
+      layout.left += ctx.pan.x
+      layout.top += ctx.pan.y
+      layout.mid += ctx.pan.x
+    }
+  }
+
+  return layout
+}
+
 
 function showPages(ctx) {
   const canvas = ctx.canvas
@@ -201,16 +317,7 @@ function showPages(ctx) {
   })
 
   function show_pgs_1(left, right, cb) {
-    let layout = ctx.layout
-
-    if(ctx.zoom > 0) {
-      layout = Object.assign({}, layout)
-      const zoom = ctx.zoom * 0.5
-      layout.left = layout.left - layout.width * zoom / 2
-      layout.top = layout.top - layout.height * zoom / 2
-      layout.width = layout.width * (1 + zoom)
-      layout.height = layout.height * (1 + zoom)
-    }
+    const layout = calcLayout(ctx)
 
     if(ctx.zoom == 0) show_bx_1(layout)
 
