@@ -149,9 +149,33 @@ function setupToolbar(ctx, cb) {
   function zoom_1() {
     return h("span", {
       onclick: () => {
-        ctx.zoom++
-        if(ctx.zoom > 4) ctx.zoom = 0
-        showPages(ctx)
+        let zoom = ctx.zoom + 1
+        if(zoom > 4) {
+          ctx.zoom = 0
+          showPages(ctx)
+        } else {
+          animate({
+            draw: curr => {
+              console.log(curr)
+              ctx.zoom = curr.zoom
+              showPages(ctx)
+            },
+            duration: 2000,
+            keyframes: {
+              0: { zoom: ctx.zoom },
+              10: { zoom: ctx.zoom + 0.03 },
+              20: { zoom: ctx.zoom + 0.10 },
+              30: { zoom: ctx.zoom + 0.22 },
+              40: { zoom: ctx.zoom + 0.35 },
+              50: { zoom: ctx.zoom + 0.50 },
+              60: { zoom: ctx.zoom + 0.65 },
+              70: { zoom: ctx.zoom + 0.78 },
+              80: { zoom: ctx.zoom + 0.90 },
+              90: { zoom: ctx.zoom + 0.97 },
+              100: { zoom }
+            },
+          })
+        }
       },
       style : {
         "cursor": "pointer",
@@ -189,7 +213,7 @@ function showPages(ctx) {
       layout.height = layout.height * (1 + zoom)
     }
 
-    show_bx_1(layout)
+    if(ctx.zoom == 0) show_bx_1(layout)
 
     const page_l = Object.assign({}, layout)
     const page_r = Object.assign({}, layout)
@@ -215,4 +239,52 @@ function showPages(ctx) {
     canvas.ctx.fillStyle = "#aaa"
     canvas.ctx.fillRect(0, 0, canvas.box.width, canvas.box.height)
   }
+}
+
+function animate({ draw, duration, keyframes, ondone }) {
+  console.log(keyframes)
+  if(!ondone) ondone = () => 1
+  if(!keyframes) return ondone()
+  if(!duration) duration = 500
+
+  const start = Date.now()
+
+  animate_1()
+
+  function animate_1() {
+    let frac = (Date.now() - start) / duration
+    if(frac > 1) frac = 1
+    const curr = progress_1(frac)
+    draw(curr)
+    if(frac === 1) ondone()
+    else requestAnimationFrame(animate_1)
+  }
+
+  function progress_1(frac) {
+    const per = frac * 100
+    let prev, next
+    for(let k in keyframes) {
+      k = Number(k)
+      if(isNaN(k)) continue
+      if(k <= per) {
+        if(!prev || k >= prev) prev = k
+      } else {
+        if(!next || k <= next) next = k
+      }
+    }
+    const ret = Object.assign({}, keyframes[prev])
+    const dst = keyframes[next]
+    if(prev == next || !next) return ret
+    for(let k in ret) {
+      const curr = Number(ret[k])
+      const nxt = Number(dst[k])
+      if(isNaN(curr) && isNaN(nxt)) continue
+      if(isNaN(curr)) curr = nxt
+      if(isNaN(nxt)) nxt = curr
+      if(nxt == curr) ret[k] = curr
+      else ret[k] = curr + (nxt - curr) * (per - prev) / (next - prev)
+    }
+    return ret
+  }
+
 }
