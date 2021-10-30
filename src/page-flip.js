@@ -1,60 +1,99 @@
 'use strict'
 import { h, getH } from '@tpp/htm-x'
 
+/*    way/
+ * set up the canvas and the toolbar, then show the
+ * first page
+ */
 export function init(id, pages) {
   const e = getH(id)
 
-  const canvas = h("canvas")
-  const ctx = canvas.getContext('2d')
-  const toolbar = h(".toolbar", "tool bar")
+  setupCanvas(pages, canvas => {
+    setupToolbar(pages, canvas, toolbar => {
 
-  const rect = {
-    w: 2480,
-    h: 3508,
-  }
-  rect.w /= 5
-  rect.h /= 5
+      e.c(
+        canvas.e,
+        toolbar.e,
+      )
 
-  canvas.width = rect.w * 2
-  canvas.height = rect.h
+      showFirstPage(canvas, pages)
 
-  canvas.attr({
-    onmousedown: evt => {
-      const pos = get_mouse_pos_1(canvas, evt)
-      if(pos.x < rect.w) {
-        page_1(0)
-        page_1(1)
-      } else {
-        page_1(2)
-        page_1(3)
-      }
-    }
+    })
   })
 
-  page_1(0)
-  page_1(1)
+}
 
-  e.c(
-    canvas,
-    toolbar,
-  )
+/*    way/
+ * set up a canvas element with some width
+ * and height and use the first page to
+ * calculate the display.
+ */
+function setupCanvas(pages, cb) {
+  const canvas = h("canvas")
+  const ctx = canvas.getContext('2d')
+  const box = {
+    width: 800,
+    height: 800,
+  }
+  canvas.width = box.width
+  canvas.height = box.height
 
-  function page_1(ndx) {
-    const xoff = (ndx % 2) * rect.w
-    const img = h("img", {
-      src: pages[ndx],
-      onload: () => {
-        ctx.drawImage(img, xoff, 0, rect.w, rect.h)
-      },
+  pages(0, (err, pg) => {
+    if(err) return console.error(err)
+    calcDisplay(box, pg, display => {
+      cb({
+        box,
+        e: canvas,
+        ctx,
+        display,
+      })
     })
-  }
+  })
+}
 
-  function get_mouse_pos_1(canvas, evt) {
-    const rect = canvas.getBoundingClientRect()
-    return {
-      x: evt.clientX - rect.left,
-      y: evt.clientY - rect.top,
-    }
+/*    way/
+ * keep a 10% margin on the closest side and
+ * enough space for two pages.
+ */
+function calcDisplay(box, pg, cb) {
+  console.log(99, box, pg)
+  let height = box.height * 0.8
+  let width = (pg.width * 2) * (height / pg.height)
+  const maxwidth = box.width * 0.8
+  if(width > maxwidth) {
+    width = maxwidth
+    height = (pg.height) * (width / (pg.width * 2))
   }
+  const page_l = {
+    top: (box.height - height) / 2,
+    left: (box.width - width) / 2,
+    width: width / 2,
+    height,
+  }
+  const page_r = {
+    top: (box.height - height) / 2,
+    left: box.width / 2,
+    width: width / 2,
+    height,
+  }
+  cb({ page_l, page_r })
+}
 
+function setupToolbar(pages, canvas, cb) {
+  cb({
+    e: h(".toolbar", "tool bar"),
+  })
+}
+
+
+function showFirstPage(canvas, pages) {
+  pages(0, (err, pg) => {
+    if(err) return console.error(err)
+    canvas.ctx.save()
+    canvas.ctx.fillStyle = "#aaa"
+    canvas.ctx.fillRect(0, 0, canvas.box.width, canvas.box.height)
+    canvas.ctx.restore()
+    const pg_ = canvas.display.page_r
+    canvas.ctx.drawImage(pg.img, pg_.left, pg_.top, pg_.width, pg_.height)
+  })
 }
