@@ -39,7 +39,7 @@ export function init(id, pagefn) {
  */
 function setupCanvas(ctx, cb) {
   const canvas = {
-    e: h("canvas")
+    e: h("canvas", { style: { display: 'block', margin: '0', padding: '0' } })
   }
   canvas.ctx = canvas.e.getContext('2d')
   canvas.box = {
@@ -83,7 +83,17 @@ function calcLayout(box, pg, cb) {
 }
 
 function setupToolbar(ctx, cb) {
-  const toolbar = h(".toolbar", "tool bar")
+  const toolbar = h(".toolbar", {
+    style: {
+      'box-sizing': 'border-box',
+      width: ctx.canvas.box.width + 'px',
+      margin: '0',
+      padding: '8px',
+      background: "#333",
+      color: '#eee',
+      'font-size': '24px',
+    }
+  })
 
   const nxt = nxt_1()
   const prv = prv_1()
@@ -132,7 +142,7 @@ function setupToolbar(ctx, cb) {
         enable_disable_1()
         showPages(ctx)
       }
-    }, ">")
+    }, " > ")
   }
 
   function prv_1() {
@@ -143,7 +153,7 @@ function setupToolbar(ctx, cb) {
         enable_disable_1()
         showPages(ctx)
       }
-    }, "<")
+    }, " < ")
   }
 
   function zoom_1() {
@@ -171,7 +181,7 @@ function setupToolbar(ctx, cb) {
         "cursor": "zoom-in",
         "user-select": "none",
       }
-    }, "+")
+    }, " + ")
   }
 }
 
