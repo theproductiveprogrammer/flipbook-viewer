@@ -156,24 +156,13 @@ function setupToolbar(ctx, cb) {
         } else {
           animate({
             draw: curr => {
-              console.log(curr)
               ctx.zoom = curr.zoom
               showPages(ctx)
             },
-            duration: 2000,
-            keyframes: {
-              0: { zoom: ctx.zoom },
-              10: { zoom: ctx.zoom + 0.03 },
-              20: { zoom: ctx.zoom + 0.10 },
-              30: { zoom: ctx.zoom + 0.22 },
-              40: { zoom: ctx.zoom + 0.35 },
-              50: { zoom: ctx.zoom + 0.50 },
-              60: { zoom: ctx.zoom + 0.65 },
-              70: { zoom: ctx.zoom + 0.78 },
-              80: { zoom: ctx.zoom + 0.90 },
-              90: { zoom: ctx.zoom + 0.97 },
-              100: { zoom }
-            },
+            duration: 500,
+            from: { zoom: ctx.zoom },
+            to: { zoom },
+            timing: t => t * t * (3.0 - 2.0 * t),
           })
         }
       },
@@ -241,11 +230,8 @@ function showPages(ctx) {
   }
 }
 
-function animate({ draw, duration, keyframes, ondone }) {
-  console.log(keyframes)
+function animate({ draw, duration, from, to, timing, ondone }) {
   if(!ondone) ondone = () => 1
-  if(!keyframes) return ondone()
-  if(!duration) duration = 500
 
   const start = Date.now()
 
@@ -261,28 +247,12 @@ function animate({ draw, duration, keyframes, ondone }) {
   }
 
   function progress_1(frac) {
-    const per = frac * 100
-    let prev, next
-    for(let k in keyframes) {
-      k = Number(k)
-      if(isNaN(k)) continue
-      if(k <= per) {
-        if(!prev || k >= prev) prev = k
-      } else {
-        if(!next || k <= next) next = k
-      }
-    }
-    const ret = Object.assign({}, keyframes[prev])
-    const dst = keyframes[next]
-    if(prev == next || !next) return ret
-    for(let k in ret) {
-      const curr = Number(ret[k])
-      const nxt = Number(dst[k])
-      if(isNaN(curr) && isNaN(nxt)) continue
-      if(isNaN(curr)) curr = nxt
-      if(isNaN(nxt)) nxt = curr
-      if(nxt == curr) ret[k] = curr
-      else ret[k] = curr + (nxt - curr) * (per - prev) / (next - prev)
+    frac = timing(frac)
+    const ret = Object.assign({}, from)
+    for(let k in from) {
+      const s = Number(from[k])
+      const e = Number(to[k])
+      ret[k] = s + (e - s) * frac
     }
     return ret
   }
