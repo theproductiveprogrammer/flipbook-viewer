@@ -4,8 +4,8 @@
   "description": "Amazing Page Flip Animation",
   "main": "main.js",
   "scripts": {
-    "start": "webpack build",
-    "test": "webpack serve --open"
+    "start": "webpack build --env production",
+    "test": "webpack serve --env development --open"
   },
   "repository": {
     "type": "git",
