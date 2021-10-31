@@ -502,6 +502,30 @@ function showFlip(ctx) {
       canvas.ctx.drawImage(left.img, loc.left, loc.top, loc.width, loc.height)
       canvas.ctx.restore()
 
+
+      canvas.ctx.save()
+      const shadow = {
+        paper: (loc.width / 2) * Math.max(Math.min(1 - frac, 0.5), 0),
+        right: (loc.width / 2) * Math.max(Math.min(strength, 0.5), 0),
+        left: (loc.width / 2) * Math.max(Math.min(strength, 0.5), 0),
+      }
+      // Draw a sharp shadow on the left side of the page
+      canvas.ctx.strokeStyle = 'rgba(0,0,0,'+(0.1 * strength)+')'
+      canvas.ctx.lineWidth = 30 * strength
+      canvas.ctx.beginPath()
+      canvas.ctx.moveTo(loc.left, otop)
+      canvas.ctx.lineTo(loc.left, otop + oheight)
+      canvas.ctx.stroke()
+
+      // Right side drop shadow
+      let gradient = canvas.ctx.createLinearGradient(loc.left + width, otop, loc.left+width+shadow.right, otop)
+      gradient.addColorStop(0, 'rgba(0,0,0,'+ (0.3*strength)+')')
+      gradient.addColorStop(0.8, 'rgba(0,0,0,0.0)')
+      canvas.ctx.fillStyle = gradient
+      canvas.ctx.fillRect(loc.left + width, otop, width + shadow.right, oheight)
+
+      canvas.ctx.restore()
+
     } else {
 
       loc = Object.assign({}, layout)
