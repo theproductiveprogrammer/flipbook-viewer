@@ -85,6 +85,9 @@ function calcInitialLayout(box, pg, cb) {
   cb(layout)
 }
 
+/*    way/
+ * show the toolbar with next, previous, and zoom buttons
+ */
 function setupToolbar(ctx, cb) {
   const toolbar = h(".toolbar", {
     style: {
@@ -114,6 +117,10 @@ function setupToolbar(ctx, cb) {
 
   cb()
 
+  /*    way/
+   * enable or disable the buttons
+   * based on the current state
+   */
   function enable_disable_1() {
     const enabled = {
       cursor: "pointer",
@@ -159,6 +166,10 @@ function setupToolbar(ctx, cb) {
     }, " < ")
   }
 
+  /*    understand/
+   * zoom smoothly, going up then re-setting back (pan AND zoom)
+   * when too big
+   */
   function zoom_1() {
     return h("span", {
       onclick: () => {
@@ -189,6 +200,10 @@ function setupToolbar(ctx, cb) {
   }
 }
 
+/*    way/
+ * capture mouse events, passing them to the
+ * actual handlers if set up
+ */
 function setupMouseHandler(ctx) {
   const handlers = [
     setupPanning(ctx),
@@ -213,6 +228,11 @@ function setupMouseHandler(ctx) {
   ctx.app.attr(attr)
 }
 
+/*    way/
+ * set up the ctx.pan offsets (only when zooming),
+ * starting on the first mouse click and ending when
+ * mouse up or we leave the box
+ */
 function setupPanning(ctx) {
   let start
 
@@ -255,12 +275,18 @@ function setupPanning(ctx) {
 
 }
 
+/*    way/
+ * return true if the point is in the current box
+ */
 function inBox(ctx, pt) {
-  const rt = currRect(ctx)
+  const rt = currBox(ctx)
   return (rt.top <= pt.y && rt.bottom >= pt.y &&
           rt.left <= pt.x && rt.right >= pt.x)
 }
 
+/*    way/
+ * return the location of the mouse relative to the app area
+ */
 function mousePt(ctx, evt) {
   const rect = ctx.app.getBoundingClientRect()
   return {
@@ -269,7 +295,10 @@ function mousePt(ctx, evt) {
   }
 }
 
-function currRect(ctx) {
+/*    way/
+ * return the current rectangle
+ */
+function currBox(ctx) {
   const l = calcLayout(ctx)
   return {
     top: l.top,
@@ -279,6 +308,9 @@ function currRect(ctx) {
   }
 }
 
+/*    understand/
+ * return the layout, adjusted for zoom and panning
+ */
 function calcLayout(ctx) {
   let layout = ctx.layout
 
@@ -301,7 +333,9 @@ function calcLayout(ctx) {
   return layout
 }
 
-
+/*    way/
+ * show the background, and the pages
+ */
 function showPages(ctx) {
   const canvas = ctx.canvas
   const left = ctx.showNdx * 2
@@ -316,6 +350,11 @@ function showPages(ctx) {
     })
   })
 
+  /*    way/
+   * get the current layout and, if no zoom, show the
+   * surrounding box. Otherwise show the left and right
+   * pages on the correct positions
+   */
   function show_pgs_1(left, right, cb) {
     const layout = calcLayout(ctx)
 
@@ -347,6 +386,9 @@ function showPages(ctx) {
   }
 }
 
+/*    understand/
+ * animate the properties {from -> to} , calling ondone when ends
+ */
 function animate({ draw, duration, from, to, timing, ondone }) {
   if(!ondone) ondone = () => 1
 
@@ -373,5 +415,4 @@ function animate({ draw, duration, from, to, timing, ondone }) {
     }
     return ret
   }
-
 }
