@@ -526,9 +526,35 @@ function showFlip(ctx) {
       show = loc.left + frac * loc.width
       loc.left = show - (1 - frac) * loc.width
       width = loc.width * frac
+
+      oheight = loc.height
+      otop = loc.top
+      loc.height *= (1 + strength * 0.1)
+      loc.top -= (loc.height-oheight)/2
+
       canvas.ctx.save()
       region = new Path2D()
-      region.rect(show, loc.top, width, loc.height)
+      region.moveTo(show, otop)
+      region.lineTo(show, otop + oheight)
+      controlpt = {
+        x: show + width / 2,
+        y: loc.top + loc.height,
+      }
+      endpt = {
+        x: show + width,
+        y: otop + oheight,
+      }
+      region.quadraticCurveTo(controlpt.x, controlpt.y, endpt.x, endpt.y)
+      region.lineTo(endpt.x, otop)
+      controlpt = {
+        x: show + width,
+        y: loc.top
+      }
+      endpt = {
+        x: show,
+        y: otop,
+      }
+      region.quadraticCurveTo(controlpt.x, controlpt.y, endpt.x, endpt.y)
       canvas.ctx.clip(region)
       canvas.ctx.drawImage(right.img, loc.left, loc.top, loc.width, loc.height)
       canvas.ctx.restore()
