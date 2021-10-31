@@ -40,7 +40,8 @@ export function init(id, pagefn, cb) {
       showPages(ctx)
 
       cb({
-        nav: ctx.nav,
+        nav: ctx.toolbar.nav,
+        zoom: ctx.toolbar.zoom,
       })
 
     })
@@ -121,14 +122,16 @@ function setupToolbar(ctx, cb) {
   const zoom = zoom_1()
 
   toolbar.c(
-    prv, nxt.e, zoom
+    prv.e, nxt.e, zoom.e
   )
 
   ctx.toolbar = {
-    e: toolbar
-  }
-  ctx.nav = {
-    nxt: nxt.onclick,
+    e: toolbar,
+    nav: {
+      nextPage: nxt.onclick,
+      prevPage: prv.onclick,
+    },
+    zoom: zoom.onclick,
   }
 
   cb()
@@ -149,14 +152,14 @@ function setupToolbar(ctx, cb) {
       opacity: "0.5",
     }
     if(ctx.flipNdx !== undefined && ctx.flipNdx !== null) {
-      prv.attr({ style: disabled })
+      prv.e.attr({ style: disabled })
       nxt.e.attr({ style: disabled })
       return
     }
     if(!ctx.showNdx || ctx.pagefn.numPages() <= 1) {
-      prv.attr({ style: disabled })
+      prv.e.attr({ style: disabled })
     } else {
-      prv.attr({ style: enabled })
+      prv.e.attr({ style: enabled })
     }
     if((ctx.showNdx * 2 + 1) >= ctx.pagefn.numPages()) {
       nxt.e.attr({ style: disabled })
@@ -182,15 +185,19 @@ function setupToolbar(ctx, cb) {
   }
 
   function prv_1() {
-    return h("span", {
-      onclick: () => {
-        if(ctx.flipNdx) return
-        if(!ctx.showNdx || ctx.pagefn.numPages() <= 1) return
-        ctx.flipNdx = ctx.showNdx - 1
-        enable_disable_1()
-        flip_1()
-      }
-    }, " < ")
+    const e = h("span", { onclick }, " < ")
+
+    return {
+      e, onclick
+    }
+
+    function onclick() {
+      if(ctx.flipNdx) return
+      if(!ctx.showNdx || ctx.pagefn.numPages() <= 1) return
+      ctx.flipNdx = ctx.showNdx - 1
+      enable_disable_1()
+      flip_1()
+    }
   }
 
   function flip_1() {
@@ -217,32 +224,40 @@ function setupToolbar(ctx, cb) {
    * when too big
    */
   function zoom_1() {
-    return h("span", {
-      onclick: () => {
-        let zoom = ctx.zoom + 1
-        if(zoom > 4) {
-          ctx.zoom = 0
-          ctx.pan = null
-          showPages(ctx)
-        } else {
-          animate({
-            draw: curr => {
-              ctx.zoom = curr.zoom
-              showPages(ctx)
-            },
-            duration: 500,
-            from: { zoom: ctx.zoom },
-            to: { zoom },
-            timing: t => t * t * (3.0 - 2.0 * t),
-          })
-        }
-      },
-      style : {
-        "cursor": "pointer",
-        "cursor": "zoom-in",
-        "user-select": "none",
+    const style = {
+      "cursor": "pointer",
+      "cursor": "zoom-in",
+      "user-select": "none",
+    }
+    const e = h("span", { onclick, style }, " + ")
+
+    return {
+      e, onclick
+    }
+
+    function onclick(zoom) {
+      zoom = Number(zoom)
+      if(isNaN(zoom)) {
+        zoom = ctx.zoom * 2 + 1
+        if(zoom > 4) zoom = 0
       }
-    }, " + ")
+      if(!zoom) {
+        ctx.zoom = 0
+        ctx.pan = null
+        showPages(ctx)
+      } else {
+        animate({
+          draw: curr => {
+            ctx.zoom = curr.zoom
+            showPages(ctx)
+          },
+          duration: 500,
+          from: { zoom: ctx.zoom },
+          to: { zoom },
+          timing: t => t * t * (3.0 - 2.0 * t),
+        })
+      }
+    }
   }
 }
 
