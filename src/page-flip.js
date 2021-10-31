@@ -429,6 +429,8 @@ function showFlip(ctx) {
   const canvas = ctx.canvas
   const left = ctx.flipNdx * 2
   const right = left + 1
+  const layout = calcLayout(ctx)
+  const strength = 0.5 - Math.abs(0.5 - ctx.flipFrac)
   canvas.ctx.save()
 
   ctx.pagefn.get(left, (err, left) => {
@@ -441,8 +443,7 @@ function showFlip(ctx) {
 
 
   function show_flip_1(left, right, frac, cb) {
-    const layout = calcLayout(ctx)
-    let loc, show, width, region, xloc
+    let loc, show, width, region, xloc, oheight, otop, controlpt, endpt
 
     if(ctx.showNdx < ctx.flipNdx) {
 
@@ -468,9 +469,35 @@ function showFlip(ctx) {
       loc.left += (1 - frac) * loc.width
       loc.width /= 2
       width = loc.width * frac
+
+      oheight = loc.height
+      otop = loc.top
+      loc.height *= (1 + strength * 0.1)
+      loc.top -= (loc.height-oheight)/2
+
       canvas.ctx.save()
       region = new Path2D()
-      region.rect(loc.left, loc.top, width, loc.height)
+      region.moveTo(loc.left, otop)
+      region.lineTo(loc.left, otop + oheight)
+      controlpt = {
+        x: loc.left + width / 2,
+        y: loc.top + loc.height,
+      }
+      endpt = {
+        x: loc.left + width,
+        y: otop + oheight,
+      }
+      region.quadraticCurveTo(controlpt.x, controlpt.y, endpt.x, endpt.y)
+      region.lineTo(endpt.x, otop)
+      controlpt = {
+        x: loc.left + width,
+        y: loc.top
+      }
+      endpt = {
+        x: loc.left,
+        y: otop,
+      }
+      region.quadraticCurveTo(controlpt.x, controlpt.y, endpt.x, endpt.y)
       canvas.ctx.clip(region)
       canvas.ctx.drawImage(left.img, loc.left, loc.top, loc.width, loc.height)
       canvas.ctx.restore()
