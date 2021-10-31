@@ -8,6 +8,14 @@ const base = {
     path: path.resolve(__dirname, 'dist'),
     clean: true,
   },
+  module: {
+    rules: [
+      {
+        test: /\.svg$/,
+        loader: 'svg-inline-loader'
+      }
+    ]
+  }
 }
 
 const dev = Object.assign({}, base, {
