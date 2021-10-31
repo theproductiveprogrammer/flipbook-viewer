@@ -6,7 +6,7 @@ import * as pageFlip from './page-flip.js'
  * main entry point into our program
  */
 function main() {
-  pageFlip.init('app', pageFn(), viewer => window.viewer = viewer)
+  pageFlip.init(pageFn(), 'app', viewer => window.viewer = viewer)
 }
 
 function pageFn() {
