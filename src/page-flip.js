@@ -1,5 +1,7 @@
 'use strict'
-import { h, getH } from '@tpp/htm-x'
+import { h, svg, getH } from '@tpp/htm-x'
+
+import heart_svg from './heart.svg'
 
 /*    way/
  * set up the canvas and the toolbar, then show the
@@ -107,6 +109,8 @@ function calcInitialLayout(ctx, pg, cb) {
  * show the toolbar with next, previous, and zoom buttons
  */
 function setupToolbar(ctx, cb) {
+  const sz = ctx.sz.tbh + "px"
+
   const toolbar = h(".toolbar", {
     style: {
       'box-sizing': 'border-box',
@@ -115,8 +119,8 @@ function setupToolbar(ctx, cb) {
       padding: '8px',
       background: "#333",
       color: '#eee',
-      'font-size': ctx.sz.tbh + "px",
-      'line-height': ctx.sz.tbh + "px",
+      'font-size': sz,
+      'line-height': sz,
     }
   })
 
@@ -125,9 +129,10 @@ function setupToolbar(ctx, cb) {
   enable_disable_1()
 
   const zoom = zoom_1()
+  const heart = heart_1()
 
   toolbar.c(
-    prv.e, nxt.e, zoom.e
+    heart.e, prv.e, nxt.e, zoom.e
   )
 
   ctx.toolbar = {
@@ -262,6 +267,31 @@ function setupToolbar(ctx, cb) {
           timing: t => t * t * (3.0 - 2.0 * t),
         })
       }
+    }
+  }
+
+  function heart_1() {
+    let liked = false
+    const heart = svg(heart_svg)
+    heart.attr({
+      height: sz,
+      onclick,
+      style: {
+        cursor: 'pointer'
+      }
+    })
+    const drawing = getH("drawing", heart)
+
+    return {
+      e: heart,
+      onclick
+    }
+
+    function onclick(like) {
+      if(typeof like !== 'object') liked = like
+      else liked = !liked
+      const fill = liked ? "red" : "#eee"
+      drawing.attr({ style: { fill } })
     }
   }
 }
