@@ -132,6 +132,10 @@ function setupToolbar(ctx, cb) {
       "user-select": "none",
       opacity: "0.5",
     }
+    if(ctx.flipNdx) {
+      prv.attr({ style: disabled })
+      nxt.attr({ style: disabled })
+    }
     if(!ctx.showNdx || ctx.pagefn.numPages() <= 1) {
       prv.attr({ style: disabled })
     } else {
@@ -147,10 +151,25 @@ function setupToolbar(ctx, cb) {
   function nxt_1() {
     return h("span", {
       onclick: () => {
+        if(ctx.flipNdx) return
         if((ctx.showNdx * 2 + 1) >= ctx.pagefn.numPages()) return
-        ctx.showNdx++
+        ctx.flipNdx = ctx.showNdx + 1
         enable_disable_1()
-        showPages(ctx)
+        animate({
+          draw: curr => {
+            ctx.flipFrac = curr.flipFrac
+            showFlip(ctx)
+          },
+          duration: 1111,
+          from: { flipFrac: 0 },
+          to: { flipFrac: 1 },
+          timing: t => t * t * (3.0 - 2.0 * t),
+          ondone: () => {
+            ctx.showNdx = ctx.flipNdx
+            ctx.flipNdx = 0
+            enable_disable_1()
+          }
+        })
       }
     }, " > ")
   }
@@ -158,6 +177,7 @@ function setupToolbar(ctx, cb) {
   function prv_1() {
     return h("span", {
       onclick: () => {
+        if(ctx.flipNdx) return
         if(!ctx.showNdx || ctx.pagefn.numPages() <= 1) return
         ctx.showNdx--
         enable_disable_1()
@@ -386,11 +406,67 @@ function showPages(ctx) {
   }
 }
 
+/*    way/
+ * show the current pages, then overlay the current flip
+ */
+function showFlip(ctx) {
+  showPages(ctx)
+
+  const canvas = ctx.canvas
+  const left = ctx.flipNdx * 2
+  const right = left + 1
+  canvas.ctx.save()
+
+  ctx.pagefn.get(left, (err, left) => {
+    if(err) return console.error(err)
+    ctx.pagefn.get(right, (err, right) => {
+      if(err) return console.error(err)
+      show_flip_1(left, right, ctx.flipFrac, () => canvas.ctx.restore())
+    })
+  })
+
+
+  function show_flip_1(left, right, frac, cb) {
+    const layout = calcLayout(ctx)
+
+    if(right) {
+      const pg = right
+      const loc = Object.assign({}, layout)
+      loc.width /= 2
+      loc.left = layout.mid
+      const show = loc.left + (1 - frac) * loc.width
+      const width = loc.width * frac
+      canvas.ctx.save()
+      const region = new Path2D()
+      region.rect(show, loc.top, width, loc.height)
+      canvas.ctx.clip(region)
+      canvas.ctx.drawImage(pg.img, loc.left, loc.top, loc.width, loc.height)
+      canvas.ctx.restore()
+    }
+    if(left) {
+      const pg = left
+      const loc = Object.assign({}, layout)
+      loc.left += (1 - frac) * loc.width
+      loc.width /= 2
+      const width = loc.width * frac
+      canvas.ctx.save()
+      const region = new Path2D()
+      region.rect(loc.left, loc.top, width, loc.height)
+      canvas.ctx.clip(region)
+      canvas.ctx.drawImage(pg.img, loc.left, loc.top, loc.width, loc.height)
+      canvas.ctx.restore()
+    }
+
+    cb()
+  }
+}
+
 /*    understand/
  * animate the properties {from -> to} , calling ondone when ends
  */
 function animate({ draw, duration, from, to, timing, ondone }) {
   if(!ondone) ondone = () => 1
+  if(!timing) timing = t => t
 
   const start = Date.now()
 
