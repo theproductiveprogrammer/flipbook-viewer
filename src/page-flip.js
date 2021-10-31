@@ -5,7 +5,12 @@ import { h, getH } from '@tpp/htm-x'
  * set up the canvas and the toolbar, then show the
  * first page
  */
-export function init(pagefn, id, cb) {
+export function init(pagefn, id, opts, cb) {
+  if(typeof opts === 'function') {
+    cb = opts
+    opts = {}
+  }
+  if(!opts) opts = {}
   if(!cb) cb = () => 1
   const app = getH(id)
 
