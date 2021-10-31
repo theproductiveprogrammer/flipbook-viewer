@@ -6,7 +6,13 @@ import * as pageFlip from './page-flip.js'
  * main entry point into our program
  */
 function main() {
-  pageFlip.init(pageFn(), 'app', viewer => window.viewer = viewer)
+  const opts = {
+    backgroundColor: "#888",
+    boxColor: "#333",
+    width: 800,
+    height: 600,
+  }
+  pageFlip.init(pageFn(), 'app', opts, viewer => window.viewer = viewer)
 }
 
 function pageFn() {

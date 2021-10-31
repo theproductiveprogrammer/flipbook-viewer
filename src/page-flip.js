@@ -16,12 +16,14 @@ export function init(pagefn, id, opts, cb) {
 
   const ctx = {
     color: {
-      bg: "#aaa",
-      bx: "#666",
+      bg: opts.backgroundColor || "#aaa",
+      bx: opts.boxColor || "#666",
     },
     sz: {
       bx_border: 4,
       outdent: 20,
+      boxw: opts.width || "800",
+      boxh: opts.height || "800",
     },
     app,
     pagefn
@@ -64,18 +66,14 @@ function setupCanvas(ctx, cb) {
     e: h("canvas", { style: { display: 'block', margin: '0', padding: '0' } })
   }
   canvas.ctx = canvas.e.getContext('2d')
-  canvas.box = {
-    width: 800,
-    height: 800,
-  }
-  canvas.e.width = canvas.box.width
-  canvas.e.height = canvas.box.height
+  canvas.e.width = ctx.sz.boxw
+  canvas.e.height = ctx.sz.boxh
 
   ctx.canvas = canvas
 
   ctx.pagefn.get(1, (err, pg) => {
     if(err) return cb(err)
-    calcInitialLayout(canvas.box, pg, layout => {
+    calcInitialLayout(ctx, pg, layout => {
       ctx.layout = layout
       cb()
     })
@@ -86,18 +84,18 @@ function setupCanvas(ctx, cb) {
  * keep a 10% margin on the closest side and
  * enough space for two pages.
  */
-function calcInitialLayout(box, pg, cb) {
-  let height = box.height * 0.8
+function calcInitialLayout(ctx, pg, cb) {
+  let height = ctx.sz.boxh * 0.8
   let width = (pg.width * 2) * (height / pg.height)
-  const maxwidth = box.width * 0.8
+  const maxwidth = ctx.sz.boxw * 0.8
   if(width > maxwidth) {
     width = maxwidth
     height = (pg.height) * (width / (pg.width * 2))
   }
   const layout = {
-    top: (box.height - height) / 2,
-    left: (box.width - width) / 2,
-    mid: box.width / 2,
+    top: (ctx.sz.boxh - height) / 2,
+    left: (ctx.sz.boxw - width) / 2,
+    mid: ctx.sz.boxw / 2,
     width: width,
     height,
   }
@@ -111,7 +109,7 @@ function setupToolbar(ctx, cb) {
   const toolbar = h(".toolbar", {
     style: {
       'box-sizing': 'border-box',
-      width: ctx.canvas.box.width + 'px',
+      width: ctx.sz.boxw + 'px',
       margin: '0',
       padding: '8px',
       background: "#333",
@@ -448,7 +446,7 @@ function showPages(ctx) {
 
   function show_bg_1() {
     canvas.ctx.fillStyle = ctx.color.bg
-    canvas.ctx.fillRect(0, 0, canvas.box.width, canvas.box.height)
+    canvas.ctx.fillRect(0, 0, ctx.sz.boxw, ctx.sz.boxh)
   }
 }
 
