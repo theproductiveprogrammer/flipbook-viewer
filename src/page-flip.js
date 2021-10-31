@@ -24,6 +24,7 @@ export function init(pagefn, id, opts, cb) {
       outdent: 20,
       boxw: opts.width || "800",
       boxh: opts.height || "800",
+      tbh: opts.toolbarSz || 24,
     },
     app,
     pagefn
@@ -114,7 +115,8 @@ function setupToolbar(ctx, cb) {
       padding: '8px',
       background: "#333",
       color: '#eee',
-      'font-size': '24px',
+      'font-size': ctx.sz.tbh + "px",
+      'line-height': ctx.sz.tbh + "px",
     }
   })
 
