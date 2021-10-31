@@ -9,6 +9,14 @@ export function init(id, pagefn) {
   const app = getH(id)
 
   const ctx = {
+    color: {
+      bg: "#aaa",
+      bx: "#666",
+    },
+    sz: {
+      bx_border: 4,
+      outdent: 20,
+    },
     app,
     pagefn
   }
@@ -395,13 +403,13 @@ function showPages(ctx) {
   }
 
   function show_bx_1(loc) {
-    canvas.ctx.fillStyle = "#666"
-    const border = 4
+    canvas.ctx.fillStyle = ctx.color.bx
+    const border = ctx.sz.bx_border
     canvas.ctx.fillRect(loc.left - border, loc.top-border, loc.width+border*2, loc.height+2*border)
   }
 
   function show_bg_1() {
-    canvas.ctx.fillStyle = "#aaa"
+    canvas.ctx.fillStyle = ctx.color.bg
     canvas.ctx.fillRect(0, 0, canvas.box.width, canvas.box.height)
   }
 }
@@ -428,37 +436,61 @@ function showFlip(ctx) {
 
   function show_flip_1(left, right, frac, cb) {
     const layout = calcLayout(ctx)
+    let loc, show, width, region, xloc
 
+    loc = Object.assign({}, layout)
+    loc.width /= 2
+    loc.left = layout.mid
+    show = loc.left + (1 - frac) * loc.width
+    width = loc.width * frac
+    xloc = xpand_rect_1(ctx, loc)
+    canvas.ctx.save()
+    region = new Path2D()
+    region.rect(show, xloc.top, width, xloc.height)
+    canvas.ctx.clip(region)
     if(right) {
-      const pg = right
-      const loc = Object.assign({}, layout)
-      loc.width /= 2
-      loc.left = layout.mid
-      const show = loc.left + (1 - frac) * loc.width
-      const width = loc.width * frac
-      canvas.ctx.save()
-      const region = new Path2D()
-      region.rect(show, loc.top, width, loc.height)
-      canvas.ctx.clip(region)
-      canvas.ctx.drawImage(pg.img, loc.left, loc.top, loc.width, loc.height)
-      canvas.ctx.restore()
+      canvas.ctx.drawImage(right.img, loc.left, loc.top, loc.width, loc.height)
+    } else {
+      const fillStyle = ctx.zoom ? ctx.color.bg : ctx.color.bx
+      show_empty_1(fillStyle, xloc)
     }
+    canvas.ctx.restore()
+
+    loc = Object.assign({}, layout)
+    loc.left += (1 - frac) * loc.width
+    loc.width /= 2
+    width = loc.width * frac
+    canvas.ctx.save()
+    region = new Path2D()
+    region.rect(loc.left, loc.top, width, loc.height)
+    canvas.ctx.clip(region)
     if(left) {
-      const pg = left
-      const loc = Object.assign({}, layout)
-      loc.left += (1 - frac) * loc.width
-      loc.width /= 2
-      const width = loc.width * frac
-      canvas.ctx.save()
-      const region = new Path2D()
-      region.rect(loc.left, loc.top, width, loc.height)
-      canvas.ctx.clip(region)
-      canvas.ctx.drawImage(pg.img, loc.left, loc.top, loc.width, loc.height)
-      canvas.ctx.restore()
+      canvas.ctx.drawImage(left.img, loc.left, loc.top, loc.width, loc.height)
+    } else {
+      const fillStyle = ctx.zoom ? ctx.color.bg : ctx.color.bx
+      show_empty_1(fillStyle, loc)
     }
+    canvas.ctx.restore()
 
     cb()
   }
+
+  function show_empty_1(fillStyle, loc) {
+    canvas.ctx.fillStyle = fillStyle
+    const border = ctx.sz.bx_border
+    canvas.ctx.fillRect(loc.left - border, loc.top-border, loc.width+border*2, loc.height+2*border)
+  }
+
+  function xpand_rect_1(ctx, loc) {
+    const border = ctx.sz.bx_border
+    return {
+      left: loc.left - border,
+      top: loc.top - border,
+      width: loc.width + border * 2,
+      height: loc.height + border * 2,
+    }
+  }
+
 }
 
 /*    understand/
