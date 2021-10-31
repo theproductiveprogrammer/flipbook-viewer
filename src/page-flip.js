@@ -5,7 +5,8 @@ import { h, getH } from '@tpp/htm-x'
  * set up the canvas and the toolbar, then show the
  * first page
  */
-export function init(id, pagefn) {
+export function init(id, pagefn, cb) {
+  if(!cb) cb = () => 1
   const app = getH(id)
 
   const ctx = {
@@ -37,6 +38,10 @@ export function init(id, pagefn) {
       ctx.zoom = 0
       ctx.showNdx = 0
       showPages(ctx)
+
+      cb({
+        nav: ctx.nav,
+      })
 
     })
   })
@@ -116,11 +121,14 @@ function setupToolbar(ctx, cb) {
   const zoom = zoom_1()
 
   toolbar.c(
-    prv, nxt, zoom
+    prv, nxt.e, zoom
   )
 
   ctx.toolbar = {
     e: toolbar
+  }
+  ctx.nav = {
+    nxt: nxt.onclick,
   }
 
   cb()
@@ -142,7 +150,7 @@ function setupToolbar(ctx, cb) {
     }
     if(ctx.flipNdx !== undefined && ctx.flipNdx !== null) {
       prv.attr({ style: disabled })
-      nxt.attr({ style: disabled })
+      nxt.e.attr({ style: disabled })
       return
     }
     if(!ctx.showNdx || ctx.pagefn.numPages() <= 1) {
@@ -151,22 +159,26 @@ function setupToolbar(ctx, cb) {
       prv.attr({ style: enabled })
     }
     if((ctx.showNdx * 2 + 1) >= ctx.pagefn.numPages()) {
-      nxt.attr({ style: disabled })
+      nxt.e.attr({ style: disabled })
     } else {
-      nxt.attr({ style: enabled })
+      nxt.e.attr({ style: enabled })
     }
   }
 
   function nxt_1() {
-    return h("span", {
-      onclick: () => {
-        if(ctx.flipNdx) return
-        if((ctx.showNdx * 2 + 1) >= ctx.pagefn.numPages()) return
-        ctx.flipNdx = ctx.showNdx + 1
-        enable_disable_1()
-        flip_1()
-      }
-    }, " > ")
+    const e = h("span", { onclick }, " > ")
+
+    return {
+      e, onclick
+    }
+
+    function onclick() {
+      if(ctx.flipNdx) return
+      if((ctx.showNdx * 2 + 1) >= ctx.pagefn.numPages()) return
+      ctx.flipNdx = ctx.showNdx + 1
+      enable_disable_1()
+      flip_1()
+    }
   }
 
   function prv_1() {
