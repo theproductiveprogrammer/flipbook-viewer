@@ -140,9 +140,10 @@ function setupToolbar(ctx, cb) {
       "user-select": "none",
       opacity: "0.5",
     }
-    if(ctx.flipNdx) {
+    if(ctx.flipNdx !== undefined && ctx.flipNdx !== null) {
       prv.attr({ style: disabled })
       nxt.attr({ style: disabled })
+      return
     }
     if(!ctx.showNdx || ctx.pagefn.numPages() <= 1) {
       prv.attr({ style: disabled })
