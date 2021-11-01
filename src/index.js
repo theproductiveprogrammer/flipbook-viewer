@@ -7,6 +7,8 @@ import heart_svg from './heart.svg'
 import share_svg from './share.svg'
 import zoom_svg from './zoom.svg'
 
+import pkg from '../package.json'
+
 class FlipbookViewer extends EventEmitter {}
 
 /*    way/
@@ -23,6 +25,7 @@ export function init(book, id, opts, cb) {
   const app = getH(id)
 
   const viewer = new FlipbookViewer()
+  viewer.version = pkg.version
 
   const ctx = {
     color: {
