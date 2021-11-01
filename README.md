@@ -4,16 +4,15 @@ Amazing flip book component with animated pages.
 
 ![demo](./test/demo.gif)
 
-This is a tiny, library (no dependencies), that uses can show images and PDF flip books.
+This is a tiny library that can show flip books from any source (including PDF’s, images, etc).
 
 ## Advantages
 
 1. Tiny (17 *Kb* compressed / 54 *Kb* uncompressed). For comparison, the amazing [page-flip](./https://www.npmjs.com/package/page-flip) is 10 **Mb**.
-2. Zero dependencies
-3. Can use any input as a book simply by creating a “book provider”. An example book using the amazing [pdfjs](./https://www.npmjs.com/package/pdfjs-dist) from Mozilla can be found in [book-pdf.js](./test/book-pdf.js) (used in [test-pdf.js](./test/test-pdf.js))
-4. Supports **Panning**, **Zooming**, **Liking**, **Sharing**, along with page turning effects
-5. Highly Configurable
-6. Provides Programmatic API & Hooks to every event
+2. Can use any input as a book simply by creating a “book provider”. An example book using the amazing [pdfjs](./https://www.npmjs.com/package/pdfjs-dist) from Mozilla can be found in [book-pdf.js](./test/book-pdf.js) (used in [test-pdf.js](./test/test-pdf.js))
+3. Supports **Panning**, **Zooming**, **Liking**, **Sharing**, along with page turning effects
+4. Highly Configurable
+5. Provides Programmatic API & Hooks to every event
 
 ## Usage
 
@@ -22,11 +21,11 @@ Below shows the flip `book` on the given `div` with the id `div-id`:
 ```js
 'use strict'
 
-import * as flipbook from '../src'
+import { init as flipbook } from 'flipbook-viewer'
 
 ...
 
-flipbook.init(book, 'div-id', (err, viewer) => {
+flipbook(book, 'div-id', (err, viewer) => {
   if(err) console.error(err)
   viewer.on('seen', n => console.log('page number: ' + n))
   viewer.on('liked', liked => console.log('liked: ' + liked))
@@ -70,7 +69,7 @@ const opts = {
   height: 600,
 }
 
-flipbook.init(book, 'div-id', opts, (err, viewer) => ...
+flipbook(book, 'div-id', opts, (err, viewer) => ...
 ```
 
 ## Events
