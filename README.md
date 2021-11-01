@@ -6,6 +6,15 @@ Amazing flip book component with animated pages.
 
 This is a tiny, library (no dependencies), that uses can show images and PDF flip books.
 
+## Advantages
+
+1. Tiny (11 *Kb* compressed / 45 *Kb* uncompressed). For comparison, the amazing [page-flip](./https://www.npmjs.com/package/page-flip) is 10 **Mb**.
+2. Zero dependencies
+3. Can use any input as a book simply by creating a “book provider”. An example using the amazing [pdfjs](./https://www.npmjs.com/package/pdfjs-dist) from Mozilla can be found in [test-pdf.js](./test/test-pdf.js)
+4. Supports **Panning**, **Zooming**, **Liking**, **Sharing**, along with page turning effects
+5. Highly Configurable
+6. Provides Programmatic API & Hooks to every event
+
 ## Usage
 
 Below shows the flip `book` on the given `div` with the id `div-id`:
@@ -73,6 +82,20 @@ viewer.on('seen', n => ...)
 viewer.on('liked', liked => ...)
 viewer.on('shared', () => ...)
 ```
+
+## Programmatic API
+
+The returned viewer can be used to programmatically control the viewer:
+
+```js
+viewer.nav.nextPage()
+viewer.nav.prevPage()
+viewer.zoom()
+viewer.share()
+viewer.heart() // toggles. viewer.heart(0) / viewer.heart(1) to set
+```
+
+Enjoy!
 
 ------------
 
