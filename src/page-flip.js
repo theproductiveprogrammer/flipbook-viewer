@@ -272,13 +272,18 @@ function setupToolbar(ctx, cb) {
 
   function heart_1() {
     let liked = false
+    const opacity = 0.8
     const heart = svg(heart_svg)
     heart.attr({
       height: sz,
       onclick,
       style: {
-        cursor: 'pointer'
-      }
+        cursor: 'pointer',
+        'padding-right': '8px',
+        opacity,
+      },
+      onmouseenter: () => heart.attr({ style: { opacity: 1 } }),
+      onmouseleave: () => heart.attr({ style: { opacity } }),
     })
     const drawing = getH("drawing", heart)
 
