@@ -56,6 +56,8 @@ export function init(pagefn, id, opts, cb) {
       cb({
         nav: ctx.toolbar.nav,
         zoom: ctx.toolbar.zoom,
+        like: ctx.toolbar.heart,
+        share: ctx.toolbar.share,
       })
 
     })
@@ -154,6 +156,7 @@ function setupToolbar(ctx, cb) {
       prevPage: prv.onclick,
     },
     zoom: zoom.onclick,
+    heart: heart.onclick,
     share: share.onclick,
   }
 
