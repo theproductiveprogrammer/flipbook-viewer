@@ -10,7 +10,7 @@ This is a tiny, library (no dependencies), that uses can show images and PDF fli
 
 1. Tiny (11 *Kb* compressed / 45 *Kb* uncompressed). For comparison, the amazing [page-flip](./https://www.npmjs.com/package/page-flip) is 10 **Mb**.
 2. Zero dependencies
-3. Can use any input as a book simply by creating a “book provider”. An example book using the amazing [pdfjs](./https://www.npmjs.com/package/pdfjs-dist) from Mozilla can be found in [book-pdf.js](./test/book-pdf.js)
+3. Can use any input as a book simply by creating a “book provider”. An example book using the amazing [pdfjs](./https://www.npmjs.com/package/pdfjs-dist) from Mozilla can be found in [book-pdf.js](./test/book-pdf.js) (used in [test-pdf.js](./test/test-pdf.js))
 4. Supports **Panning**, **Zooming**, **Liking**, **Sharing**, along with page turning effects
 5. Highly Configurable
 6. Provides Programmatic API & Hooks to every event
