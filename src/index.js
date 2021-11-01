@@ -32,8 +32,7 @@ export function init(book, id, opts, cb) {
       tbs: opts.toolbarSeparator || "#9e9e9e",
     },
     sz: {
-      bx_border: 4,
-      outdent: 20,
+      bx_border: opts.boxBorder || 4,
       boxw: opts.width || 800,
       boxh: opts.height || 600,
       tbh: opts.toolbarSz || 24,
