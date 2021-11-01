@@ -20,14 +20,16 @@ export function init(pagefn, id, opts, cb) {
 
   const ctx = {
     color: {
-      bg: opts.backgroundColor || "#aaa",
-      bx: opts.boxColor || "#666",
+      bg: opts.backgroundColor || "#353535",
+      bx: opts.boxColor || "#353535",
+      tb: opts.toolbarColor || "#353535",
+      tbs: opts.toolbarSeparator || "#9e9e9e",
     },
     sz: {
       bx_border: 4,
       outdent: 20,
-      boxw: opts.width || "800",
-      boxh: opts.height || "800",
+      boxw: opts.width || 800,
+      boxh: opts.height || 600,
       tbh: opts.toolbarSz || 24,
     },
     app,
@@ -121,11 +123,12 @@ function setupToolbar(ctx, cb) {
       width: ctx.sz.boxw + 'px',
       margin: '0',
       padding: '8px',
-      background: "#333",
+      background: ctx.color.tb,
       color: '#eee',
       'font-size': linesz,
       'line-height': linesz,
       position: "relative",
+      "border-top": `1px solid ${ctx.color.tbs}`,
     }
   })
 
