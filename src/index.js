@@ -35,7 +35,7 @@ export function init(book, id, opts, cb) {
       bx_border: opts.boxBorder || 4,
       boxw: opts.width || 800,
       boxh: opts.height || 600,
-      tbh: opts.toolbarSz || 24,
+      tbh: opts.toolbarSize || 24,
     },
     app,
     book,
