@@ -9,17 +9,18 @@ import * as book from './book-pdf.js'
  */
 function main() {
   const opts = {
-    backgroundColor: "#666",
-    toolbarSeparator: "#9e9e9e",
-    toolbarColor: "#333",
-    boxColor: "#333",
+    backgroundColor: "#fff",
+    toolbarSeparator: "white",
+    toolbarColor: "#ebbaae",
+    boxColor: "#f55e39",
+    boxBorder: 16,
     width: 800,
     height: 600,
   }
 
   book.init('/fp.pdf', (err, book) => {
     if(err) console.error(err)
-    else flipbook.init(book, 'app', (err, viewer) => {
+    else flipbook.init(book, 'app', opts, (err, viewer) => {
       if(err) console.error(err)
       window.flipbook = viewer
       viewer.on('seen', n => console.log('page number: ' + n))
