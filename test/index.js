@@ -20,7 +20,10 @@ function main() {
 
   pdf.init((err, pageProvider) => {
     if(err) console.error(err)
-    else pageFlip.init(pageProvider, 'app', viewer => window.viewer = viewer)
+    else pageFlip.init(pageProvider, 'app', (err, viewer) => {
+      if(err) console.error(err)
+      window.pageflipviewer = viewer
+    })
   })
 
 }

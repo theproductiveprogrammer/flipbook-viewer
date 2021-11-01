@@ -1,9 +1,13 @@
 'use strict'
+import * as EventEmitter from 'events'
+
 import { h, svg, getH } from '@tpp/htm-x'
 
 import heart_svg from './heart.svg'
 import share_svg from './share.svg'
 import zoom_svg from './zoom.svg'
+
+class PageFlipViewer extends EventEmitter {}
 
 /*    way/
  * set up the canvas and the toolbar, then show the
@@ -17,6 +21,8 @@ export function init(pagefn, id, opts, cb) {
   if(!opts) opts = {}
   if(!cb) cb = () => 1
   const app = getH(id)
+
+  const viewer = new PageFlipViewer()
 
   const ctx = {
     color: {
@@ -37,10 +43,10 @@ export function init(pagefn, id, opts, cb) {
   }
 
   setupCanvas(ctx, err => {
-    if(err) return console.error(err)
+    if(err) return cb(err)
 
     setupToolbar(ctx, err => {
-      if(err) return console.error(err)
+      if(err) return cb(err)
 
       app.c(
         ctx.canvas.e,
@@ -53,12 +59,12 @@ export function init(pagefn, id, opts, cb) {
       ctx.showNdx = 0
       showPages(ctx)
 
-      cb({
-        nav: ctx.toolbar.nav,
-        zoom: ctx.toolbar.zoom,
-        like: ctx.toolbar.heart,
-        share: ctx.toolbar.share,
-      })
+      viewer.nav = ctx.toolbar.nav
+      viewer.zoom = ctx.toolbar.zoom
+      viewer.like = ctx.toolbar.heart
+      viewer.share = ctx.toolbar.share
+
+      cb(null, viewer)
 
     })
   })
