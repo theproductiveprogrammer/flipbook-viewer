@@ -355,6 +355,7 @@ function setupToolbar(ctx, cb) {
     }
 
     function onclick() {
+      ctx.viewer.emit('shared')
       const loc = window.location.href
       prompt("Copy this link to share", loc)
     }

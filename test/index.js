@@ -25,6 +25,7 @@ function main() {
       window.pageflipviewer = viewer
       viewer.on('seen', n => console.log('page number: ' + n))
       viewer.on('liked', liked => console.log('liked: ' + liked))
+      viewer.on('shared', () => console.log('shared'))
     })
   })
 
