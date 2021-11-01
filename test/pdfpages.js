@@ -9,12 +9,18 @@ export function init(cb) {
   const cache = []
 
   pdfjs.getDocument('/fp.pdf').promise
-    .then(pdf => cb(null, {
-      numPages: () => pdf.numPages,
-      get: (n, cb) => get_page_1(pdf, n, cb)
-    }))
+    .then(pdf => {
+      warm_cache_1(pdf, 1)
+      cb(null, {
+        numPages: () => pdf.numPages,
+        get: (n, cb) => get_page_1(pdf, n, cb)
+      })
+    })
     .catch(err => cb(err))
 
+  function warm_cache_1(pdf, n) {
+    if(n <= pdf.numPages) get_page_1(pdf, n, () => warm_cache_1(pdf, n+1))
+  }
 
   function get_page_1(pdf, n, cb) {
     if(!n || n > pdf.numPages) return cb()
