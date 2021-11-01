@@ -12,7 +12,8 @@
     "url": "git+https://github.com/theproductiveprogrammer/flipbook-viewer.git"
   },
   "keywords": [
-    "page-flip", "flipbook", "pdfjs"
+    "page-flip", "flipbook", "pdfjs", "pdf-viewer", "viewer", "canvas", "animation",
+    "page-turning", "page-turn"
   ],
   "author": "charles.lobo@gmail.com",
   "license": "ISC",
