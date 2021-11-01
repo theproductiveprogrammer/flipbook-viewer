@@ -3,6 +3,7 @@ import { h, svg, getH } from '@tpp/htm-x'
 
 import heart_svg from './heart.svg'
 import share_svg from './share.svg'
+import zoom_svg from './zoom.svg'
 
 /*    way/
  * set up the canvas and the toolbar, then show the
@@ -112,6 +113,7 @@ function calcInitialLayout(ctx, pg, cb) {
 function setupToolbar(ctx, cb) {
   const linesz = ctx.sz.tbh + "px"
   const iconsz = (ctx.sz.tbh * 0.6) + "px"
+  const zoomiconsz = (ctx.sz.tbh * 0.75) + "px"
 
   const toolbar = h(".toolbar", {
     style: {
@@ -123,6 +125,7 @@ function setupToolbar(ctx, cb) {
       color: '#eee',
       'font-size': linesz,
       'line-height': linesz,
+      position: "relative",
     }
   })
 
@@ -136,7 +139,9 @@ function setupToolbar(ctx, cb) {
   const share = share_1()
 
   toolbar.c(
-    heart.e, share.e, prv.e, nxt.e, zoom.e
+    h("div", { style: { "position": "absolute" } }, [ heart.e, share.e ]),
+    h("div", { style: { "position": "absolute", "right": "0" } }, [ zoom.e ]),
+    h("div", { style: { "text-align": "center" } }, [ prv.e, nxt.e ])
   )
 
   ctx.toolbar = {
@@ -239,15 +244,24 @@ function setupToolbar(ctx, cb) {
    * when too big
    */
   function zoom_1() {
-    const style = {
-      "cursor": "pointer",
-      "cursor": "zoom-in",
-      "user-select": "none",
-    }
-    const e = h("span", { onclick, style }, " + ")
+    const opacity = 0.8
+    const zoom = svg(zoom_svg)
+    zoom.attr({
+      height: zoomiconsz,
+      onclick,
+      style: {
+        cursor: 'pointer',
+        cursor: "zoom-in",
+        "user-select": "none",
+        'padding-right': zoomiconsz,
+        opacity,
+      },
+      onmouseenter: () => zoom.attr({ style: { opacity: 1 } }),
+      onmouseleave: () => zoom.attr({ style: { opacity } }),
+    })
 
     return {
-      e, onclick
+      e: zoom, onclick
     }
 
     function onclick(zoom) {
