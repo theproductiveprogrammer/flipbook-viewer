@@ -23,6 +23,7 @@ function main() {
     else pageFlip.init(pageProvider, 'app', (err, viewer) => {
       if(err) console.error(err)
       window.pageflipviewer = viewer
+      viewer.on('seen', n => console.log('page number: ' + n))
     })
   })
 

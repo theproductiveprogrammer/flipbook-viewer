@@ -39,7 +39,8 @@ export function init(pagefn, id, opts, cb) {
       tbh: opts.toolbarSz || 24,
     },
     app,
-    pagefn
+    pagefn,
+    viewer,
   }
 
   setupCanvas(ctx, err => {
@@ -57,7 +58,6 @@ export function init(pagefn, id, opts, cb) {
 
       ctx.zoom = 0
       ctx.showNdx = 0
-      showPages(ctx)
 
       viewer.nav = ctx.toolbar.nav
       viewer.zoom = ctx.toolbar.zoom
@@ -65,6 +65,8 @@ export function init(pagefn, id, opts, cb) {
       viewer.share = ctx.toolbar.share
 
       cb(null, viewer)
+
+      showPages(ctx)
 
     })
   })
@@ -498,14 +500,16 @@ function calcLayout(ctx) {
  */
 function showPages(ctx) {
   const canvas = ctx.canvas
-  const left = ctx.showNdx * 2
-  const right = left + 1
+  const left_ = ctx.showNdx * 2
+  const right_ = left_ + 1
   canvas.ctx.save()
   show_bg_1()
-  ctx.pagefn.get(left, (err, left) => {
+  ctx.pagefn.get(left_, (err, left) => {
     if(err) return console.error(err)
-    ctx.pagefn.get(right, (err, right) => {
+    if(!ctx.flipNdx && left) ctx.viewer.emit('seen', left_)
+    ctx.pagefn.get(right_, (err, right) => {
       if(err) return console.error(err)
+      if(!ctx.flipNdx && right) ctx.viewer.emit('seen', right_)
       show_pgs_1(left, right, () => canvas.ctx.restore())
     })
   })
