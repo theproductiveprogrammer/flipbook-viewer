@@ -1,6 +1,9 @@
 'use strict'
 
-import * as flipbook from '../src'
+/* for development/hotloading */
+//import * as flipbook from '../src'
+
+import * as flipbook from '../dist/flipbook-viewer.js'
 
 import * as book from './book-imgs.js'
 
