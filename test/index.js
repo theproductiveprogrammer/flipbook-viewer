@@ -1,6 +1,6 @@
 'use strict'
 
-import * as pageFlip from '../src/page-flip.js'
+import * as flipbook from '../src'
 
 import * as img from './imgpages.js'
 import * as pdf from './pdfpages.js'
@@ -18,11 +18,11 @@ function main() {
     height: 600,
   }
 
-  pdf.init((err, pageProvider) => {
+  pdf.init((err, book) => {
     if(err) console.error(err)
-    else pageFlip.init(pageProvider, 'app', (err, viewer) => {
+    else flipbook.init(book, 'app', (err, viewer) => {
       if(err) console.error(err)
-      window.pageflipviewer = viewer
+      window.flipbook = viewer
       viewer.on('seen', n => console.log('page number: ' + n))
       viewer.on('liked', liked => console.log('liked: ' + liked))
       viewer.on('shared', () => console.log('shared'))

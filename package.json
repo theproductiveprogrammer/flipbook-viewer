@@ -1,7 +1,7 @@
 {
-  "name": "page-flip",
-  "version": "0.1.0",
-  "description": "Amazing Page Flip Animation",
+  "name": "flipbook-viewer",
+  "version": "1.0.0",
+  "description": "Amazing Page Flip Animation for a (PDF/Image Collection) Flipbook viewer",
   "main": "main.js",
   "scripts": {
     "start": "webpack build --env production",
@@ -9,17 +9,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/theproductiveprogrammer/page-flip.git"
+    "url": "git+https://github.com/theproductiveprogrammer/flipbook-viewer.git"
   },
   "keywords": [
-    "page-flip"
+    "page-flip", "flipbook", "pdfjs"
   ],
   "author": "charles.lobo@gmail.com",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/theproductiveprogrammer/page-flip/issues"
+    "url": "https://github.com/theproductiveprogrammer/flipbook-viewer/issues"
   },
-  "homepage": "https://github.com/theproductiveprogrammer/page-flip#readme",
+  "homepage": "https://github.com/theproductiveprogrammer/flipbook-viewer#readme",
   "devDependencies": {
     "pdfjs-dist": "^2.10.377",
     "svg-inline-loader": "^0.8.2",
