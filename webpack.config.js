@@ -5,6 +5,7 @@ const base = {
   entry: {
     test: './test/index.js',
     'page-flip': './src/page-flip.js',
+    'pdf.worker': 'pdfjs-dist/build/pdf.worker.entry',
   },
   output: {
     filename: '[name].js',
@@ -26,6 +27,7 @@ const dev = Object.assign({}, base, {
   devtool: 'inline-source-map',
   devServer: {
     static: './test',
+    allowedHosts: 'testing-page-flip.com',
   },
 })
 
