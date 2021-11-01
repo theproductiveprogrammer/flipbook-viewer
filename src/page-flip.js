@@ -328,6 +328,7 @@ function setupToolbar(ctx, cb) {
     function onclick(like) {
       if(like && typeof like !== 'object') liked = like
       else liked = !liked
+      ctx.viewer.emit('liked', liked)
       const fill = liked ? "red" : "#eee"
       drawing.attr({ style: { fill } })
     }
