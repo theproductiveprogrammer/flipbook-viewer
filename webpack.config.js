@@ -2,9 +2,12 @@
 const path = require('path')
 
 const base = {
-  entry: './src/index.js',
+  entry: {
+    test: './test/index.js',
+    'page-flip': './src/page-flip.js',
+  },
   output: {
-    filename: 'page-flip.js',
+    filename: '[name].js',
     path: path.resolve(__dirname, 'dist'),
     clean: true,
   },

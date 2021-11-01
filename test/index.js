@@ -1,6 +1,6 @@
 'use strict'
 
-import * as pageFlip from './page-flip.js'
+import * as pageFlip from '../src/page-flip.js'
 
 /*    understand/
  * main entry point into our program
