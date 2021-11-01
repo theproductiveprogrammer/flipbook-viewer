@@ -2,6 +2,7 @@
 import { h, svg, getH } from '@tpp/htm-x'
 
 import heart_svg from './heart.svg'
+import share_svg from './share.svg'
 
 /*    way/
  * set up the canvas and the toolbar, then show the
@@ -109,7 +110,8 @@ function calcInitialLayout(ctx, pg, cb) {
  * show the toolbar with next, previous, and zoom buttons
  */
 function setupToolbar(ctx, cb) {
-  const sz = ctx.sz.tbh + "px"
+  const linesz = ctx.sz.tbh + "px"
+  const iconsz = (ctx.sz.tbh * 0.6) + "px"
 
   const toolbar = h(".toolbar", {
     style: {
@@ -119,10 +121,11 @@ function setupToolbar(ctx, cb) {
       padding: '8px',
       background: "#333",
       color: '#eee',
-      'font-size': sz,
-      'line-height': sz,
+      'font-size': linesz,
+      'line-height': linesz,
     }
   })
+
 
   const nxt = nxt_1()
   const prv = prv_1()
@@ -130,9 +133,10 @@ function setupToolbar(ctx, cb) {
 
   const zoom = zoom_1()
   const heart = heart_1()
+  const share = share_1()
 
   toolbar.c(
-    heart.e, prv.e, nxt.e, zoom.e
+    heart.e, share.e, prv.e, nxt.e, zoom.e
   )
 
   ctx.toolbar = {
@@ -142,6 +146,7 @@ function setupToolbar(ctx, cb) {
       prevPage: prv.onclick,
     },
     zoom: zoom.onclick,
+    share: share.onclick,
   }
 
   cb()
@@ -275,7 +280,7 @@ function setupToolbar(ctx, cb) {
     const opacity = 0.8
     const heart = svg(heart_svg)
     heart.attr({
-      height: sz,
+      height: iconsz,
       onclick,
       style: {
         cursor: 'pointer',
@@ -299,6 +304,34 @@ function setupToolbar(ctx, cb) {
       drawing.attr({ style: { fill } })
     }
   }
+
+  function share_1() {
+    const opacity = 0.8
+    const share = svg(share_svg)
+    share.attr({
+      height: iconsz,
+      onclick,
+      style: {
+        cursor: 'pointer',
+        'padding-right': '8px',
+        opacity,
+      },
+      onmouseenter: () => share.attr({ style: { opacity: 1 } }),
+      onmouseleave: () => share.attr({ style: { opacity } }),
+    })
+
+    return {
+      e: share,
+      onclick
+    }
+
+    function onclick() {
+      const loc = window.location.href
+      prompt("Copy this link to share", loc)
+    }
+  }
+
+
 }
 
 /*    way/
