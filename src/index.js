@@ -7,13 +7,13 @@ import heart_svg from './heart.svg'
 import share_svg from './share.svg'
 import zoom_svg from './zoom.svg'
 
-class PageFlipViewer extends EventEmitter {}
+class FlipbookViewer extends EventEmitter {}
 
 /*    way/
  * set up the canvas and the toolbar, then show the
  * first page
  */
-export function init(pagefn, id, opts, cb) {
+export function init(book, id, opts, cb) {
   if(typeof opts === 'function') {
     cb = opts
     opts = {}
@@ -22,7 +22,7 @@ export function init(pagefn, id, opts, cb) {
   if(!cb) cb = () => 1
   const app = getH(id)
 
-  const viewer = new PageFlipViewer()
+  const viewer = new FlipbookViewer()
 
   const ctx = {
     color: {
@@ -39,7 +39,7 @@ export function init(pagefn, id, opts, cb) {
       tbh: opts.toolbarSz || 24,
     },
     app,
-    pagefn,
+    book,
     viewer,
   }
 
@@ -88,7 +88,7 @@ function setupCanvas(ctx, cb) {
 
   ctx.canvas = canvas
 
-  ctx.pagefn.get(1, (err, pg) => {
+  ctx.book.getPage(1, (err, pg) => {
     if(err) return cb(err)
     calcInitialLayout(ctx, pg, layout => {
       ctx.layout = layout
@@ -190,12 +190,12 @@ function setupToolbar(ctx, cb) {
       nxt.e.attr({ style: disabled })
       return
     }
-    if(!ctx.showNdx || ctx.pagefn.numPages() <= 1) {
+    if(!ctx.showNdx || ctx.book.numPages() <= 1) {
       prv.e.attr({ style: disabled })
     } else {
       prv.e.attr({ style: enabled })
     }
-    if((ctx.showNdx * 2 + 1) >= ctx.pagefn.numPages()) {
+    if((ctx.showNdx * 2 + 1) >= ctx.book.numPages()) {
       nxt.e.attr({ style: disabled })
     } else {
       nxt.e.attr({ style: enabled })
@@ -211,7 +211,7 @@ function setupToolbar(ctx, cb) {
 
     function onclick() {
       if(ctx.flipNdx) return
-      if((ctx.showNdx * 2 + 1) >= ctx.pagefn.numPages()) return
+      if((ctx.showNdx * 2 + 1) >= ctx.book.numPages()) return
       ctx.flipNdx = ctx.showNdx + 1
       enable_disable_1()
       flip_1()
@@ -227,7 +227,7 @@ function setupToolbar(ctx, cb) {
 
     function onclick() {
       if(ctx.flipNdx) return
-      if(!ctx.showNdx || ctx.pagefn.numPages() <= 1) return
+      if(!ctx.showNdx || ctx.book.numPages() <= 1) return
       ctx.flipNdx = ctx.showNdx - 1
       enable_disable_1()
       flip_1()
@@ -506,10 +506,10 @@ function showPages(ctx) {
   const right_ = left_ + 1
   canvas.ctx.save()
   show_bg_1()
-  ctx.pagefn.get(left_, (err, left) => {
+  ctx.book.getPage(left_, (err, left) => {
     if(err) return console.error(err)
     if(!ctx.flipNdx && left) ctx.viewer.emit('seen', left_)
-    ctx.pagefn.get(right_, (err, right) => {
+    ctx.book.getPage(right_, (err, right) => {
       if(err) return console.error(err)
       if(!ctx.flipNdx && right) ctx.viewer.emit('seen', right_)
       show_pgs_1(left, right, () => canvas.ctx.restore())
@@ -565,9 +565,9 @@ function showFlip(ctx) {
   const strength = 0.5 - Math.abs(0.5 - ctx.flipFrac)
   canvas.ctx.save()
 
-  ctx.pagefn.get(left, (err, left) => {
+  ctx.book.getPage(left, (err, left) => {
     if(err) return console.error(err)
-    ctx.pagefn.get(right, (err, right) => {
+    ctx.book.getPage(right, (err, right) => {
       if(err) return console.error(err)
       show_flip_1(left, right, ctx.flipFrac, () => canvas.ctx.restore())
     })

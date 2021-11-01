@@ -13,7 +13,7 @@ export function init(pdflink, cb) {
       warm_cache_1(pdf, 1)
       cb(null, {
         numPages: () => pdf.numPages,
-        get: (n, cb) => get_page_1(pdf, n, cb)
+        getPage: (n, cb) => get_page_1(pdf, n, cb)
       })
     })
     .catch(err => cb(err))

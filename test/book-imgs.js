@@ -8,11 +8,11 @@ export function init(pages, cb) {
 
   cb(null, {
     numPages: () => pages.length,
-    get,
+    getPage,
   })
 
 
-  function get(n, cb) {
+  function getPage(n, cb) {
     if(!n || n > pages.length) return cb()
     if(cache[n]) return cb(null, cache[n])
 
