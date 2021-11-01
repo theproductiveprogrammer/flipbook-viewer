@@ -5,7 +5,14 @@ const base = {
   entry: {
     'test-imgs': './test/test-imgs.js',
     'test-pdf': './test/test-pdf.js',
-    'flipbook-viewer': './src/index.js',
+    'flipbook-viewer': {
+      import: './src/index.js',
+      library: {
+        name: 'flipbook',
+        type: 'umd',
+        umdNamedDefine: true,
+      },
+    },
     'pdf.worker': 'pdfjs-dist/build/pdf.worker.entry',
   },
   output: {
