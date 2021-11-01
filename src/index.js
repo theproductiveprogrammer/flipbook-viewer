@@ -7,23 +7,27 @@ import * as pageFlip from './page-flip.js'
  */
 function main() {
   const opts = {
-    backgroundColor: "#888",
+    backgroundColor: "#666",
+    toolbarSeparator: "#9e9e9e",
+    toolbarColor: "#333",
     boxColor: "#333",
     width: 800,
     height: 600,
   }
-  pageFlip.init(pageFn(), 'app', opts, viewer => window.viewer = viewer)
+  pageFlip.init(pageFn(), 'app', viewer => window.viewer = viewer)
 }
 
 function pageFn() {
   const pages = [
-    '/0.png',
+    '/000.png',
     '/1.png',
     '/2.png',
+    '/6.png',
     '/3.png',
+    '/8.png',
+    '/9.png',
     '/4.png',
     '/5.png',
-    '/6.png',
     '/7.png',
   ]
 
