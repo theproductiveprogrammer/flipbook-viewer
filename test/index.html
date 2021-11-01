@@ -3,9 +3,33 @@
 <head>
     <meta charset="utf-8">
     <title>Page Flip</title>
+<style>
+.samples {
+  margin-left: 200px;
+}
+#line {
+  margin-top: 24px;
+  width: 200px;
+  border-bottom: 1px solid black;
+  margin-left: -32px;
+}
+ul, li {
+  margin: 0;
+  padding: 0;
+  margin-bottom: 8px;
+}
+</style>
 </head>
 <body>
-  <div id=app></div>
-  <script src="/test.js"></script>
+  <h1>Flipbook Viewer</h1>
+  <img src="./demo.gif"></img>
+  <div class="samples">
+    <h2>Samples</h2>
+    <ul>
+      <li><a href="./test-imgs.html">Flipbook (Images)</a></li>
+      <li><a href="./test-pdf.html">Flipbook (PDF)</a></li>
+    </ul>
+    <div id="line">&nbsp;</div>
+  </div>
 </body>
 </html>

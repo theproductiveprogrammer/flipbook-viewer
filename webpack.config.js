@@ -3,7 +3,8 @@ const path = require('path')
 
 const base = {
   entry: {
-    test: './test/index.js',
+    'test-imgs': './test/test-imgs.js',
+    'test-pdf': './test/test-pdf.js',
     'flipbook-viewer': './src/index.js',
     'pdf.worker': 'pdfjs-dist/build/pdf.worker.entry',
   },
