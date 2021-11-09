@@ -139,7 +139,7 @@ function setupToolbar(ctx, cb) {
     style: {
       'box-sizing': 'border-box',
       width: ctx.sz.boxw + 'px',
-      margin: '0',
+      'margin-top': '0',
       padding: '8px',
       background: ctx.color.tb,
       color: '#eee',
