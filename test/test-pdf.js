@@ -21,10 +21,12 @@ function main() {
     height: 600,
   }
 
+  const app = document.getElementById('app')
+
   book.init('/fp.pdf', (err, book) => {
     if(err) console.error(err)
-    else flipbook.init(book, 'app', opts, (err, viewer) => {
-      if(err) console.error(err)
+    else flipbook.init(book, app, opts, (err, viewer) => {
+      if(err) return console.error(err)
       window.flipbook = viewer
       viewer.on('seen', n => console.log('page number: ' + n))
       viewer.on('liked', liked => console.log('liked: ' + liked))
