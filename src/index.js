@@ -23,6 +23,12 @@ export function init(book, id, opts, cb) {
   if(!opts) opts = {}
   if(!cb) cb = () => 1
   const app = getH(id)
+  if(!app) {
+    const emsg = ("flipbook-viewer: Failed to find container for viewer: " + id)
+    console.error(emsg)
+    cb(emsg)
+    return
+  }
 
   const viewer = new FlipbookViewer()
   viewer.version = pkg.version
