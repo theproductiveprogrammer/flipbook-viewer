@@ -29,6 +29,6 @@
     "webpack-dev-server": "^4.4.0"
   },
   "dependencies": {
-    "@tpp/htm-x": "^5.7.1"
+    "@tpp/htm-x": "^5.8.0"
   }
 }
