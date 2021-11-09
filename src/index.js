@@ -88,7 +88,7 @@ export function init(book, id, opts, cb) {
  */
 function setupCanvas(ctx, cb) {
   const canvas = {
-    e: h("canvas", { style: { display: 'block', margin: '0', padding: '0' } })
+    e: h("canvas")
   }
   canvas.ctx = canvas.e.getContext('2d')
   canvas.e.width = ctx.sz.boxw
