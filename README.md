@@ -8,11 +8,11 @@ This is a tiny library that can show flip books from any source (including PDF�
 
 ## Advantages
 
-1. Tiny (10 *Kb* package / 28 *Kb* unpacked). For comparison, the amazing [page-flip](./https://www.npmjs.com/package/page-flip) is ~ 10 **Mb**.
-2. Can use any input as a book simply by creating a “book provider”. An example book using the amazing [pdfjs](./https://www.npmjs.com/package/pdfjs-dist) from Mozilla can be found in [book-pdf.js](./test/book-pdf.js) (used in [test-pdf.js](./test/test-pdf.js))
+1. Tiny (10 ***Kb*** packed / 28 ***Kb*** unpacked). For comparison, the amazing [page-flip](./https://www.npmjs.com/package/page-flip) is 10 **Mb** (x1000 times bigger!)
+2. Can use any input as a book simply by plugging in a “book provider”. An example PDF book using the amazing [pdfjs](./https://www.npmjs.com/package/pdfjs-dist) from Mozilla can be found in the test folder—[book-pdf.js](./test/book-pdf.js) (referenced usage: [test-pdf.js](./test/test-pdf.js))
 3. Supports **Panning**, **Zooming**, **Liking**, **Sharing**, along with page turning effects
 4. Highly Configurable
-5. Provides Programmatic API & Hooks to every event
+5. Provides Programmatic API & Hooks for complete control
 
 ## Usage
 
