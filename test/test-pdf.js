@@ -19,6 +19,7 @@ function main() {
     boxBorder: 16,
     width: 800,
     height: 600,
+    //popup: true,
   }
 
   const app = document.getElementById('app')

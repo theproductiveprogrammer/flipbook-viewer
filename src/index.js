@@ -74,6 +74,7 @@ export function init(book, id, opts, cb) {
 
       cb(null, viewer)
 
+      if(opts.popup) history.pushState({}, "", "#")
       showPages(ctx)
 
     })
