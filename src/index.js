@@ -6,6 +6,7 @@ import { h, svg, getH } from '@tpp/htm-x'
 import heart_svg from './heart.svg'
 import share_svg from './share.svg'
 import zoom_svg from './zoom.svg'
+import download_svg from './dwn.svg'
 
 import pkg from '../package.json'
 
@@ -46,6 +47,7 @@ export function init(book, id, opts, cb) {
       boxh: opts.height || 600,
       tbh: opts.toolbarSize || 24,
     },
+    downloadurl: opts.downloadurl,
     app,
     book,
     viewer,
@@ -71,6 +73,7 @@ export function init(book, id, opts, cb) {
       viewer.zoom = ctx.toolbar.zoom
       viewer.like = ctx.toolbar.heart
       viewer.share = ctx.toolbar.share
+      if(ctx.downloadurl) viewer.download = ctx.toolbar.download
 
       cb(null, viewer)
 
@@ -129,7 +132,7 @@ function calcInitialLayout(ctx, pg, cb) {
 }
 
 /*    way/
- * show the toolbar with next, previous, and zoom buttons
+ * show the toolbar with next, previous, zoom, and download buttons
  */
 function setupToolbar(ctx, cb) {
   const linesz = ctx.sz.tbh + "px"
@@ -159,9 +162,13 @@ function setupToolbar(ctx, cb) {
   const zoom = zoom_1()
   const heart = heart_1()
   const share = share_1()
+  const dwn = dwn_1()
+
+  const left_elems = [ heart.e, share.e ]
+  if(dwn) left_elems.push(dwn.e)
 
   toolbar.c(
-    h("div", { style: { "position": "absolute" } }, [ heart.e, share.e ]),
+    h("div", { style: { "position": "absolute" } }, left_elems),
     h("div", { style: { "position": "absolute", "right": "0" } }, [ zoom.e ]),
     h("div", { style: { "text-align": "center" } }, [ prv.e, nxt.e ])
   )
@@ -367,6 +374,33 @@ function setupToolbar(ctx, cb) {
       ctx.viewer.emit('shared')
       const loc = window.location.href
       prompt("Copy this link to share", loc)
+    }
+  }
+
+  function dwn_1() {
+    if(!ctx.downloadurl) return
+    const opacity = 0.8
+    const dwn = svg(download_svg)
+    dwn.attr({
+      height: iconsz,
+      onclick,
+      style: {
+        cursor: 'pointer',
+        'padding-right': '8px',
+        opacity,
+      },
+      onmouseenter: () => dwn.attr({ style: { opacity: 1 } }),
+      onmouseleave: () => dwn.attr({ style: { opacity } }),
+    })
+
+    return {
+      e: dwn,
+      onclick
+    }
+
+    function onclick() {
+      ctx.viewer.emit('downloaded')
+      window.location.href = ctx.downloadurl
     }
   }
 

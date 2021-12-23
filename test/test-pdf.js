@@ -20,6 +20,7 @@ function main() {
     width: 800,
     height: 600,
     //popup: true,
+    downloadurl: '/fp.pdf',
   }
 
   const app = document.getElementById('app')
@@ -32,6 +33,7 @@ function main() {
       viewer.on('seen', n => console.log('page number: ' + n))
       viewer.on('liked', liked => console.log('liked: ' + liked))
       viewer.on('shared', () => console.log('shared'))
+      viewer.on('downloaded', () => console.log('downloaded'))
     })
   })
 
