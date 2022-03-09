@@ -142,7 +142,7 @@ function setupToolbar(ctx, cb) {
   const iconsz = (ctx.sz.tbh * 0.6) + "px"
   const zoomiconsz = (ctx.sz.tbh * 0.75) + "px"
 
-  const toolbar = h(".toolbar", {
+  const toolbar = h(".flipbook__toolbar", {
     style: {
       'box-sizing': 'border-box',
       width: ctx.sz.boxw + 'px',
@@ -173,7 +173,7 @@ function setupToolbar(ctx, cb) {
   toolbar.c(
     h("div", { style: { "position": "absolute" } }, left_elems),
     h("div", { style: { "position": "absolute", "right": "0" } }, [ zoom.e ]),
-    h("div", { style: { "text-align": "center" } }, [ prv.e, nxt.e ])
+    h("div.flipbook__arrow-buttons", { style: { "text-align": "center" } }, [ prv.e, nxt.e ])
   )
 
   ctx.toolbar = {
