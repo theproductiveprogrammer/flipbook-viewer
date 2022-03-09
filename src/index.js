@@ -48,6 +48,9 @@ export function init(book, id, opts, cb) {
       tbh: opts.toolbarSize || 24,
     },
     downloadurl: opts.downloadurl,
+    toolbar: {
+      hidesavebtn: opts.hidesavebtn,
+    },
     app,
     book,
     viewer,
@@ -378,6 +381,7 @@ function setupToolbar(ctx, cb) {
   }
 
   function dwn_1() {
+    if(ctx.toolbar && ctx.toolbar.hidesavebtn) return
     if(!ctx.downloadurl) return
     const opacity = 0.8
     const dwn = svg(download_svg)
