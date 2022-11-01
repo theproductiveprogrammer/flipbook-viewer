@@ -16,7 +16,7 @@ export function init(pdflink, cb) {
         getPage: (n, cb) => get_page_1(pdf, n, cb)
       })
     })
-    .catch(err => cb(err))
+    .catch(err => cb(err || "pdf parsing failed"))
 
   function warm_cache_1(pdf, n) {
     if(n <= pdf.numPages) get_page_1(pdf, n, () => warm_cache_1(pdf, n+1))
