@@ -101,14 +101,14 @@ function setupControls(ctx, viewer) {
   }
 
   viewer.flip_forward = () => {
-    if(ctx.flipNdx) return
+    if(ctx.flipNdx || ctx.flipNdx === 0) return
     if(ctx.book.numPages() <= 1) return
     if((ctx.showNdx * 2 + 1) >= ctx.book.numPages()) return
     ctx.flipNdx = ctx.showNdx + 1
     flip_1(ctx)
   }
   viewer.flip_back = () => {
-    if(ctx.flipNdx) return
+    if(ctx.flipNdx || ctx.flipNdx === 0) return
     if(ctx.book.numPages() <= 1) return
     if(!ctx.showNdx) return
     ctx.flipNdx = ctx.showNdx - 1
