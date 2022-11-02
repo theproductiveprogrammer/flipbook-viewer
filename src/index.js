@@ -3,11 +3,6 @@ import * as EventEmitter from 'events'
 
 import { h, svg, getH } from '@tpp/htm-x'
 
-import heart_svg from './heart.svg'
-import share_svg from './share.svg'
-import zoom_svg from './zoom.svg'
-import download_svg from './dwn.svg'
-
 import pkg from '../package.json'
 
 class FlipbookViewer extends EventEmitter {}
@@ -37,15 +32,11 @@ export function init(book, id, opts, cb) {
   const ctx = {
     color: {
       bg: opts.backgroundColor || "#353535",
-      bx: opts.boxColor || "#353535",
-      tb: opts.toolbarColor || "#353535",
-      tbs: opts.toolbarSeparator || "#9e9e9e",
     },
     sz: {
-      bx_border: opts.boxBorder || 4,
+      bx_border: opts.boxBorder || 0,
       boxw: opts.width || 800,
       boxh: opts.height || 600,
-      tbh: opts.toolbarSize || 24,
     },
     downloadurl: opts.downloadurl,
     toolbar: {
@@ -59,8 +50,7 @@ export function init(book, id, opts, cb) {
   setupCanvas(ctx, err => {
     if(err) return cb(err)
 
-    setupToolbar(ctx, err => {
-      if(err) return cb(err)
+    app.c(
 
       app.c(
         ctx.canvas.e,
@@ -72,11 +62,6 @@ export function init(book, id, opts, cb) {
       ctx.zoom = 0
       ctx.showNdx = 0
 
-      viewer.nav = ctx.toolbar.nav
-      viewer.zoom = ctx.toolbar.zoom
-      viewer.like = ctx.toolbar.heart
-      viewer.share = ctx.toolbar.share
-      if(ctx.downloadurl) viewer.download = ctx.toolbar.download
 
       cb(null, viewer)
 
@@ -132,283 +117,6 @@ function calcInitialLayout(ctx, pg, cb) {
     height,
   }
   cb(layout)
-}
-
-/*    way/
- * show the toolbar with next, previous, zoom, and download buttons
- */
-function setupToolbar(ctx, cb) {
-  const linesz = ctx.sz.tbh + "px"
-  const iconsz = (ctx.sz.tbh * 0.6) + "px"
-  const zoomiconsz = (ctx.sz.tbh * 0.75) + "px"
-
-  const toolbar = h(".flipbook__toolbar", {
-    style: {
-      'box-sizing': 'border-box',
-      width: ctx.sz.boxw + 'px',
-      'margin-top': '0',
-      padding: '8px',
-      background: ctx.color.tb,
-      color: '#eee',
-      'font-size': linesz,
-      'line-height': linesz,
-      position: "relative",
-      "border-top": `1px solid ${ctx.color.tbs}`,
-    }
-  })
-
-
-  const nxt = nxt_1()
-  const prv = prv_1()
-  enable_disable_1()
-
-  const zoom = zoom_1()
-  const heart = heart_1()
-  const share = share_1()
-  const dwn = dwn_1()
-
-  const left_elems = [ heart.e, share.e ]
-  if(dwn) left_elems.push(dwn.e)
-
-  toolbar.c(
-    h("div", { style: { "position": "absolute" } }, left_elems),
-    h("div", { style: { "position": "absolute", "right": "0" } }, [ zoom.e ]),
-    h("div.flipbook__arrow-buttons", { style: { "text-align": "center" } }, [ prv.e, nxt.e ])
-  )
-
-  ctx.toolbar = {
-    e: toolbar,
-    nav: {
-      nextPage: nxt.onclick,
-      prevPage: prv.onclick,
-    },
-    zoom: zoom.onclick,
-    heart: heart.onclick,
-    share: share.onclick,
-  }
-
-  cb()
-
-  /*    way/
-   * enable or disable the buttons
-   * based on the current state
-   */
-  function enable_disable_1() {
-    const enabled = {
-      cursor: "pointer",
-      "user-select": "none",
-      "opacity": "1",
-    }
-    const disabled = {
-      cursor: "not-allowed",
-      "user-select": "none",
-      opacity: "0.5",
-    }
-    if(ctx.flipNdx !== undefined && ctx.flipNdx !== null) {
-      prv.e.attr({ style: disabled })
-      nxt.e.attr({ style: disabled })
-      return
-    }
-    if(!ctx.showNdx || ctx.book.numPages() <= 1) {
-      prv.e.attr({ style: disabled })
-    } else {
-      prv.e.attr({ style: enabled })
-    }
-    if((ctx.showNdx * 2 + 1) >= ctx.book.numPages()) {
-      nxt.e.attr({ style: disabled })
-    } else {
-      nxt.e.attr({ style: enabled })
-    }
-  }
-
-  function nxt_1() {
-    const e = h("span", { onclick }, " > ")
-
-    return {
-      e, onclick
-    }
-
-    function onclick() {
-      if(ctx.flipNdx) return
-      if((ctx.showNdx * 2 + 1) >= ctx.book.numPages()) return
-      ctx.flipNdx = ctx.showNdx + 1
-      enable_disable_1()
-      flip_1()
-    }
-  }
-
-  function prv_1() {
-    const e = h("span", { onclick }, " < ")
-
-    return {
-      e, onclick
-    }
-
-    function onclick() {
-      if(ctx.flipNdx) return
-      if(!ctx.showNdx || ctx.book.numPages() <= 1) return
-      ctx.flipNdx = ctx.showNdx - 1
-      enable_disable_1()
-      flip_1()
-    }
-  }
-
-  function flip_1() {
-    animate({
-      draw: curr => {
-        ctx.flipFrac = curr.flipFrac
-        showFlip(ctx)
-      },
-      duration: 1111,
-      from: { flipFrac: 0 },
-      to: { flipFrac: 1 },
-      timing: t => t * t * (3.0 - 2.0 * t),
-      ondone: () => {
-        ctx.showNdx = ctx.flipNdx
-        ctx.flipNdx = null
-        enable_disable_1()
-        showPages(ctx)
-      }
-    })
-  }
-
-  /*    understand/
-   * zoom smoothly, going up then re-setting back (pan AND zoom)
-   * when too big
-   */
-  function zoom_1() {
-    const opacity = 0.8
-    const zoom = svg(zoom_svg)
-    zoom.attr({
-      height: zoomiconsz,
-      onclick,
-      style: {
-        cursor: 'pointer',
-        cursor: "zoom-in",
-        "user-select": "none",
-        'padding-right': zoomiconsz,
-        opacity,
-      },
-      onmouseenter: () => zoom.attr({ style: { opacity: 1 } }),
-      onmouseleave: () => zoom.attr({ style: { opacity } }),
-    })
-
-    return {
-      e: zoom, onclick
-    }
-
-    function onclick(zoom) {
-      zoom = Number(zoom)
-      if(isNaN(zoom)) {
-        zoom = ctx.zoom * 2 + 1
-        if(zoom > 4) zoom = 0
-      }
-      if(!zoom) {
-        ctx.zoom = 0
-        ctx.pan = null
-        showPages(ctx)
-      } else {
-        animate({
-          draw: curr => {
-            ctx.zoom = curr.zoom
-            showPages(ctx)
-          },
-          duration: 500,
-          from: { zoom: ctx.zoom },
-          to: { zoom },
-          timing: t => t * t * (3.0 - 2.0 * t),
-        })
-      }
-    }
-  }
-
-  function heart_1() {
-    let liked = false
-    const opacity = 0.8
-    const heart = svg(heart_svg)
-    heart.attr({
-      height: iconsz,
-      onclick,
-      style: {
-        cursor: 'pointer',
-        'padding-right': '8px',
-        opacity,
-      },
-      onmouseenter: () => heart.attr({ style: { opacity: 1 } }),
-      onmouseleave: () => heart.attr({ style: { opacity } }),
-    })
-    const drawing = getH("drawing", heart)
-
-    return {
-      e: heart,
-      onclick
-    }
-
-    function onclick(like) {
-      if(like && typeof like !== 'object') liked = like
-      else liked = !liked
-      ctx.viewer.emit('liked', liked)
-      const fill = liked ? "red" : "#eee"
-      drawing.attr({ style: { fill } })
-    }
-  }
-
-  function share_1() {
-    const opacity = 0.8
-    const share = svg(share_svg)
-    share.attr({
-      height: iconsz,
-      onclick,
-      style: {
-        cursor: 'pointer',
-        'padding-right': '8px',
-        opacity,
-      },
-      onmouseenter: () => share.attr({ style: { opacity: 1 } }),
-      onmouseleave: () => share.attr({ style: { opacity } }),
-    })
-
-    return {
-      e: share,
-      onclick
-    }
-
-    function onclick() {
-      ctx.viewer.emit('shared')
-      const loc = window.location.href
-      prompt("Copy this link to share", loc)
-    }
-  }
-
-  function dwn_1() {
-    if(ctx.toolbar && ctx.toolbar.hidesavebtn) return
-    if(!ctx.downloadurl) return
-    const opacity = 0.8
-    const dwn = svg(download_svg)
-    dwn.attr({
-      height: iconsz,
-      onclick,
-      style: {
-        cursor: 'pointer',
-        'padding-right': '8px',
-        opacity,
-      },
-      onmouseenter: () => dwn.attr({ style: { opacity: 1 } }),
-      onmouseleave: () => dwn.attr({ style: { opacity } }),
-    })
-
-    return {
-      e: dwn,
-      onclick
-    }
-
-    function onclick() {
-      ctx.viewer.emit('downloaded')
-      window.location.href = ctx.downloadurl
-    }
-  }
-
-
 }
 
 /*    way/
