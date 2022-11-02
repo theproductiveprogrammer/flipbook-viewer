@@ -35,6 +35,7 @@ export function init(book, id, opts, cb) {
     },
     sz: {
       bx_border: opts.boxBorder || 0,
+      margin: opts.margin || 1,
       boxw: opts.width || 800,
       boxh: opts.height || 600,
     },
@@ -73,6 +74,7 @@ export function init(book, id, opts, cb) {
 
 }
 
+
 /*    way/
  * set up a canvas element with some width
  * and height and use the first page to
@@ -98,13 +100,13 @@ function setupCanvas(ctx, cb) {
 }
 
 /*    way/
- * keep a 10% margin on the closest side and
- * enough space for two pages.
+ * keep enough space for two pages.
  */
 function calcInitialLayout(ctx, pg, cb) {
-  let height = ctx.sz.boxh * 0.8
+  const margin = 1 - (ctx.sz.margin/100)
+  let height = ctx.sz.boxh * margin
   let width = (pg.width * 2) * (height / pg.height)
-  const maxwidth = ctx.sz.boxw * 0.8
+  const maxwidth = ctx.sz.boxw * margin
   if(width > maxwidth) {
     width = maxwidth
     height = (pg.height) * (width / (pg.width * 2))
