@@ -52,25 +52,24 @@ export function init(book, id, opts, cb) {
     if(err) return cb(err)
 
     app.c(
+      ctx.canvas.e,
+      ctx.toolbar.e,
+    )
 
-      app.c(
-        ctx.canvas.e,
-        ctx.toolbar.e,
-      )
+    setupMouseHandler(ctx)
 
-      setupMouseHandler(ctx)
-
-      ctx.zoom = 0
-      ctx.showNdx = 0
+    ctx.zoom = 0
+    ctx.showNdx = 0
 
 
-      cb(null, viewer)
+    cb(null, viewer)
 
-      if(opts.popup) history.pushState({}, "", "#")
-      showPages(ctx)
-
-    })
+    if(opts.popup) history.pushState({}, "", "#")
+    showPages(ctx)
   })
+
+}
+
 
 }
 
