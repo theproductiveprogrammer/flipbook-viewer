@@ -555,10 +555,10 @@ function showPages(ctx) {
   show_bg_1()
   ctx.book.getPage(left_, (err, left) => {
     if(err) return console.error(err)
-    if(!ctx.flipNdx && left) ctx.viewer.emit('seen', left_)
+    if(!ctx.flipNdx && ctx.flipNdx !== 0 && left) ctx.viewer.emit('seen', left_)
     ctx.book.getPage(right_, (err, right) => {
       if(err) return console.error(err)
-      if(!ctx.flipNdx && right) ctx.viewer.emit('seen', right_)
+      if(!ctx.flipNdx && ctx.flipNdx !== 0 && right) ctx.viewer.emit('seen', right_)
       show_pgs_1(left, right, () => canvas.ctx.restore())
     })
   })
