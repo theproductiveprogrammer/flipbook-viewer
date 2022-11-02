@@ -61,6 +61,7 @@ export function init(book, id, opts, cb) {
     ctx.zoom = 0
     ctx.showNdx = 0
 
+    setupControls(ctx, viewer)
 
     cb(null, viewer)
 
@@ -71,6 +72,66 @@ export function init(book, id, opts, cb) {
 }
 
 
+function setupControls(ctx, viewer) {
+
+  viewer.page_count = ctx.book.numPages()
+
+  viewer.zoom = zoom => {
+    zoom = Number(zoom)
+    if(isNaN(zoom)) {
+      zoom = ctx.zoom * 2 + 1
+      if(zoom > 4) zoom = 0
+    }
+    if(!zoom) {
+      ctx.zoom = 0
+      ctx.pan = null
+      showPages(ctx)
+    } else {
+      animate({
+        draw: curr => {
+          ctx.zoom = curr.zoom
+          showPages(ctx)
+        },
+        duration: 500,
+        from: { zoom: ctx.zoom },
+        to: { zoom },
+        timing: t => t * t * (3.0 - 2.0 * t),
+      })
+    }
+  }
+
+  viewer.flip_forward = () => {
+    if(ctx.flipNdx) return
+    if(ctx.book.numPages() <= 1) return
+    if((ctx.showNdx * 2 + 1) >= ctx.book.numPages()) return
+    ctx.flipNdx = ctx.showNdx + 1
+    flip_1(ctx)
+  }
+  viewer.flip_back = () => {
+    if(ctx.flipNdx) return
+    if(ctx.book.numPages() <= 1) return
+    if(!ctx.showNdx) return
+    ctx.flipNdx = ctx.showNdx - 1
+    flip_1(ctx)
+  }
+
+  function flip_1(ctx) {
+    animate({
+      draw: curr => {
+        ctx.flipFrac = curr.flipFrac
+        showFlip(ctx)
+      },
+      duration: 1111,
+      from: { flipFrac: 0 },
+      to: { flipFrac: 1 },
+      timing: t => t * t * (3.0 - 2.0 * t),
+      ondone: () => {
+        ctx.showNdx = ctx.flipNdx
+        ctx.flipNdx = null
+        showPages(ctx)
+      }
+    })
+  }
 }
 
 
