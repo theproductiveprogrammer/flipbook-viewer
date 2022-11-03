@@ -1,39 +1,43 @@
 'use strict'
-import { h } from '@tpp/htm-x'
-import * as EventEmitter from 'events'
+import { h } from '@tpp/htm-x';
+import * as EventEmitter from 'events';
 
-class SinglePageViewer extends EventEmitter {}
+class SinglePageViewer extends EventEmitter {};
 
 /*    way/
  * set up the canvas and the toolbar, then show the
  * first page
  */
 export function singlePageViewer(ctx, cb) {
-  const viewer = new SinglePageViewer()
+  const viewer = new SinglePageViewer();
+  viewer.page_count = ctx.book.numPages();
 
   setupCanvas(ctx, err => {
-    if(err) return cb(err)
+    if(err) return cb(err);
 
-    app.c(ctx.canvas.e)
+    calcInitialLayout(ctx, err => {
+      if(err) return cb(err);
 
-    setupMouseHandler(ctx, viewer)
+      ctx.app.c(ctx.canvas.e);
 
-    ctx.zoom = 0
-    ctx.showNdx = 0
+      setupMouseHandler(ctx, viewer);
 
-    setupControls(ctx, viewer)
+      ctx.zoom = 0;
 
-    cb(null, viewer)
+      setupControls(ctx, viewer);
 
-    showPages(ctx, viewer)
-  })
+      cb(null, viewer);
+
+      showPages(ctx, viewer);
+
+    });
+
+  });
 
 }
 
 
 function setupControls(ctx, viewer) {
-
-  viewer.page_count = ctx.book.numPages()
 
   viewer.zoom = zoom => {
     zoom = Number(zoom)
@@ -95,49 +99,58 @@ function setupControls(ctx, viewer) {
 
 
 /*    way/
- * set up a canvas element with some width
- * and height and use the first page to
- * calculate the display.
+ * set up a canvas element with the width and height
  */
 function setupCanvas(ctx, cb) {
   const canvas = {
     e: h("canvas")
-  }
-  canvas.ctx = canvas.e.getContext('2d')
-  canvas.e.width = ctx.sz.boxw
-  canvas.e.height = ctx.sz.boxh
+  };
+  canvas.ctx = canvas.e.getContext('2d');
+  canvas.e.width = ctx.sz.boxw;
+  canvas.e.height = ctx.sz.boxh;
 
-  ctx.canvas = canvas
+  ctx.canvas = canvas;
 
-  ctx.book.getPage(1, (err, pg) => {
-    if(err) return cb(err)
-    calcInitialLayout(ctx, pg, layout => {
-      ctx.layout = layout
-      cb()
-    })
-  })
+  cb();
 }
 
 /*    way/
- * show the page nicely sized
+ * use the initial page to calculate the usable size of the
+ * view.
  */
-function calcInitialLayout(ctx, pg, cb) {
-  const usable = 1 - (ctx.sz.margin/100)
-  let height = ctx.sz.boxh * usable
-  let width = (pg.width * 2) * (height / pg.height)
-  const maxwidth = ctx.sz.boxw * margin
-  if(width > maxwidth) {
-    width = maxwidth
-    height = (pg.height) * (width / (pg.width * 2))
-  }
-  const layout = {
-    top: (ctx.sz.boxh - height) / 2,
-    left: (ctx.sz.boxw - width) / 2,
-    mid: ctx.sz.boxw / 2,
-    width: width,
-    height,
-  }
-  cb(layout)
+function calcInitialLayout(ctx, cb) {
+  ctx.book.getPage(1, (err, pg) => {
+
+    const mT = ctx.sz.marginTop/100;
+    const mL = ctx.sz.marginLeft/100;
+    const usableH = 1 - mT*2;
+    const usableW = 1 - mL*2;
+
+    let height = ctx.sz.boxh * usableH;
+    let width = pg.width * (height / pg.height);
+    const maxwidth = ctx.sz.boxw * usableW;
+    if(width > maxwidth) {
+      width = maxwidth;
+      height = pg.height * (width / pg.width);
+    }
+
+    let top = ctx.sz.boxh * mT;
+    let left = ctx.sz.boxw * mL;
+    if(top + height > ctx.sz.boxh) top = ctx.sz.boxh - height;
+    if(left + width > ctx.sz.boxw) left = ctx.sz.boxw - width;
+
+    ctx.layout = {
+      top,
+      left,
+      mid: ctx.sz.boxw / 2,
+      width: width,
+      height,
+    };
+    console.log(ctx)
+
+    cb();
+
+  });
 }
 
 /*    way/
@@ -277,49 +290,23 @@ function calcLayout(ctx) {
  * show the background and the pages on the viewer
  */
 function showPages(ctx, viewer) {
-  const canvas = ctx.canvas
-  const left_ = ctx.showNdx * 2
-  const right_ = left_ + 1
-  canvas.ctx.save()
-  show_bg_1()
-  ctx.book.getPage(left_, (err, left) => {
-    if(err) return console.error(err)
-    if(!ctx.flipNdx && ctx.flipNdx !== 0 && left) viewer.emit('seen', left_)
-    ctx.book.getPage(right_, (err, right) => {
-      if(err) return console.error(err)
-      if(!ctx.flipNdx && ctx.flipNdx !== 0 && right) viewer.emit('seen', right_)
-      show_pgs_1(left, right, () => canvas.ctx.restore())
+  const canvas = ctx.canvas;
+  canvas.ctx.save();
+  show_bg_1();
+
+  show_page_1(1, err => {
+    if(err) console.error(err);
+  });
+
+
+  function show_page_1(num, cb) {
+    ctx.book.getPage(num, (err, pg) => {
+      const layout = calcLayout(ctx);
+      if(err) return cb(err);
+      viewer.emit('seen', num);
+      canvas.ctx.drawImage(pg.img, layout.left, layout.top, layout.width, layout.height)
+      cb();
     })
-  })
-
-  /*    way/
-   * get the current layout and, if no zoom, show the
-   * surrounding box. Otherwise show the left and right
-   * pages on the correct positions
-   */
-  function show_pgs_1(left, right, cb) {
-    const layout = calcLayout(ctx)
-
-    if(ctx.zoom == 0) show_bx_1(layout)
-
-    const page_l = Object.assign({}, layout)
-    const page_r = Object.assign({}, layout)
-    page_l.width /= 2
-    page_r.width /= 2
-    page_r.left = layout.mid
-    if(left) show_pg_1(left, page_l)
-    if(right) show_pg_1(right, page_r)
-    cb()
-  }
-
-  function show_pg_1(pg, loc) {
-    canvas.ctx.drawImage(pg.img, loc.left, loc.top, loc.width, loc.height)
-  }
-
-  function show_bx_1(loc) {
-    canvas.ctx.fillStyle = ctx.color.bx
-    const border = ctx.sz.bx_border
-    canvas.ctx.fillRect(loc.left - border, loc.top-border, loc.width+border*2, loc.height+2*border)
   }
 
   function show_bg_1() {

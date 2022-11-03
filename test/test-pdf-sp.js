@@ -12,9 +12,11 @@ import * as book from './book-pdf.js'
  */
 function main() {
   const opts = {
-    width: 800,
-    height: 600,
+    width: 600,
+    height: 800,
     singlepage: true,
+    marginTop: 5,
+    marginLeft: 2,
   }
 
   const app = document.getElementById('app')
