@@ -5,6 +5,8 @@ const base = {
   entry: {
     'test-imgs': './test/test-imgs.js',
     'test-pdf': './test/test-pdf.js',
+    'test-imgs-sp': './test/test-imgs-sp.js',
+    'test-pdf-sp': './test/test-pdf-sp.js',
     'flipbook-viewer': {
       import: './src/index.js',
       library: {
