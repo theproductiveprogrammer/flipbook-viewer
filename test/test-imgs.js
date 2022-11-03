@@ -24,14 +24,21 @@ function main() {
     '/7.png',
   ]
 
+  const next = document.getElementById('next')
+  const prev = document.getElementById('prev')
+  const zoom = document.getElementById('zoom')
+
   book.init(pages, (err, book) => {
     if(err) console.error(err)
     else flipbook.init(book, 'app', (err, viewer) => {
       if(err) console.error(err)
-      window.flipbook = viewer
+
       viewer.on('seen', n => console.log('page number: ' + n))
-      viewer.on('liked', liked => console.log('liked: ' + liked))
-      viewer.on('shared', () => console.log('shared'))
+
+      next.onclick = () => viewer.flip_forward();
+      prev.onclick = () => viewer.flip_back();
+      zoom.onclick = () => viewer.zoom();
+
     })
   })
 
