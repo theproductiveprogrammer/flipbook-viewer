@@ -1,26 +1,26 @@
 'use strict'
-import { getH } from '@tpp/htm-x'
+import { getH } from '@tpp/htm-x';
 
-import { flipbookViewer } from "./flipbookviewer.js"
-import { singlePageViewer } from "./singlepageviewer.js"
-import pkg from '../package.json'
+import { flipbookViewer } from "./flipbookviewer.js";
+import { singlePageViewer } from "./singlepageviewer.js";
+import pkg from '../package.json';
 
 /*    way/
  * set up the options and return the requested viewer
  */
 export function init(book, id, opts, cb) {
   if(typeof opts === 'function') {
-    cb = opts
-    opts = {}
+    cb = opts;
+    opts = {};
   }
-  if(!opts) opts = {}
-  if(!cb) cb = () => 1
-  const app = getH(id)
+  if(!opts) opts = {};
+  if(!cb) cb = () => 1;
+  const app = getH(id);
   if(!app) {
-    const emsg = ("flipbook-viewer: Failed to find container for viewer: " + id)
-    console.error(emsg)
-    cb(emsg)
-    return
+    const emsg = ("flipbook-viewer: Failed to find container for viewer: " + id);
+    console.error(emsg);
+    cb(emsg);
+    return;
   }
 
   const ctx = {
@@ -39,14 +39,14 @@ export function init(book, id, opts, cb) {
     },
     app,
     book,
-  }
+  };
 
-  if(opts.singlepage) singlePageViewer(ctx, ret_1)
-  else flipbookViewer(ctx, ret_1)
+  if(opts.singlepage) singlePageViewer(ctx, ret_1);
+  else flipbookViewer(ctx, ret_1);
 
   function ret_1(err, viewer) {
-    if(opts.popup) history.pushState({}, "", "#")
-    if(viewer) viewer.version = pkg.version
-    return cb(err, viewer)
+    if(opts.popup) history.pushState({}, "", "#");
+    if(viewer) viewer.version = pkg.version;
+    return cb(err, viewer);
   }
 }
