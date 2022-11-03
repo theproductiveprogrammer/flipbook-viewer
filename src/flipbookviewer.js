@@ -369,13 +369,12 @@ function showFlip(ctx, viewer) {
       xloc = xpand_rect_1(ctx, loc);
       canvas.ctx.save();
       region = new Path2D();
-      region.rect(show, xloc.top, width, xloc.height);
+      region.rect(show, xloc.top-5, width, xloc.height+10);
       canvas.ctx.clip(region);
       if(right) {
         canvas.ctx.drawImage(right.img, loc.left, loc.top, loc.width, loc.height);
       } else {
-        const fillStyle = ctx.zoom ? ctx.color.bg : ctx.color.bx;
-        show_empty_1(fillStyle, xloc);
+        show_empty_1(ctx.color.bg, xloc);
       }
       canvas.ctx.restore();
 
@@ -445,13 +444,12 @@ function showFlip(ctx, viewer) {
       xloc = xpand_rect_1(ctx, loc);
       canvas.ctx.save();
       region = new Path2D();
-      region.rect(xloc.left, xloc.top, width, xloc.height);
+      region.rect(xloc.left, xloc.top-5, width, xloc.height+10);
       canvas.ctx.clip(region);
       if(left) {
         canvas.ctx.drawImage(left.img, loc.left, loc.top, loc.width, loc.height);
       } else {
-        const fillStyle = ctx.zoom ? ctx.color.bg : ctx.color.bx;
-        show_empty_1(fillStyle, loc);
+        show_empty_1(ctx.color.bg, loc);
       }
       canvas.ctx.restore();
 
@@ -523,7 +521,7 @@ function showFlip(ctx, viewer) {
   function show_empty_1(fillStyle, loc) {
     canvas.ctx.fillStyle = fillStyle;
     const border = ctx.sz.bx_border;
-    canvas.ctx.fillRect(loc.left - border, loc.top-border, loc.width+border*2, loc.height+2*border);
+    canvas.ctx.fillRect(loc.left - border, loc.top-border-5, loc.width+border*2, loc.height+2*border+10);
   }
 
   function xpand_rect_1(ctx, loc) {
