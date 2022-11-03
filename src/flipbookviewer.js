@@ -117,7 +117,8 @@ function setupCanvas(ctx, cb) {
 }
 
 /*    way/
- * keep enough space for two pages.
+ * use the first page to calculate enough space
+ * for showing a double-page view.
  */
 function calcInitialLayout(ctx, cb) {
   ctx.book.getPage(1, (err, pg) => {
