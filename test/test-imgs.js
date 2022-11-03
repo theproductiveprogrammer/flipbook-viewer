@@ -11,19 +11,6 @@ import * as book from './book-imgs.js'
  * main entry point into our program
  */
 function main() {
-  /* see test-pdf.js for used options
-  const defaultOpts = {
-    backgroundColor: "#353535",
-    toolbarSeparator: "#9e9e9e",
-    toolbarColor: "#353535",
-    toolbarSize: 24,
-    boxColor: "#353535",
-    boxBorder: 4,
-    width: 800,
-    height: 600,
-  }
-  */
-
   const pages = [
     '/000.png',
     '/1.png',
