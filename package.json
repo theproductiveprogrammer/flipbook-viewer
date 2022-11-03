@@ -4,8 +4,9 @@
   "description": "Amazing Page Flip Animation for a (PDF/Image Collection) Flipbook viewer",
   "main": "dist/flipbook-viewer.js",
   "scripts": {
-    "start": "webpack build --env production",
-    "test": "webpack serve --env development --open"
+    "start": "npm run clean && webpack build --env production",
+    "test": "webpack serve --env development --open",
+    "clean": "npx -y del-cli dist && npx -y make-dir-cli dist"
   },
   "repository": {
     "type": "git",
