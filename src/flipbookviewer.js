@@ -10,30 +10,35 @@ class FlipbookViewer extends EventEmitter {};
  */
 export function flipbookViewer(ctx, cb) {
   const viewer = new FlipbookViewer();
+  viewer.page_count = ctx.book.numPages();
 
   setupCanvas(ctx, err => {
     if(err) return cb(err);
 
-    ctx.app.c(ctx.canvas.e);
+    calcInitialLayout(ctx, err => {
+      if(err) return cb(err);
 
-    setupMouseHandler(ctx, viewer);
+      ctx.app.c(ctx.canvas.e);
 
-    ctx.zoom = 0;
-    ctx.showNdx = 0;
+      setupMouseHandler(ctx, viewer);
 
-    setupControls(ctx, viewer);
+      ctx.zoom = 0;
+      ctx.showNdx = 0;
 
-    cb(null, viewer);
+      setupControls(ctx, viewer);
 
-    showPages(ctx, viewer);
+      cb(null, viewer);
+
+      showPages(ctx, viewer);
+
+    });
+
   });
 
 }
 
 
 function setupControls(ctx, viewer) {
-
-  viewer.page_count = ctx.book.numPages();
 
   viewer.zoom = zoom => {
     zoom = Number(zoom);
@@ -108,36 +113,35 @@ function setupCanvas(ctx, cb) {
   canvas.e.height = ctx.sz.boxh;
 
   ctx.canvas = canvas;
-
-  ctx.book.getPage(1, (err, pg) => {
-    if(err) return cb(err);
-    calcInitialLayout(ctx, pg, layout => {
-      ctx.layout = layout;
-      cb();
-    })
-  })
+  cb();
 }
 
 /*    way/
  * keep enough space for two pages.
  */
-function calcInitialLayout(ctx, pg, cb) {
-  const usable = 1 - (ctx.sz.margin/100);
-  let height = ctx.sz.boxh * usable;
-  let width = (pg.width * 2) * (height / pg.height);
-  const maxwidth = ctx.sz.boxw * usable;
-  if(width > maxwidth) {
-    width = maxwidth;
-    height = (pg.height) * (width / (pg.width * 2));
-  }
-  const layout = {
-    top: (ctx.sz.boxh - height) / 2,
-    left: (ctx.sz.boxw - width) / 2,
-    mid: ctx.sz.boxw / 2,
-    width: width,
-    height,
-  };
-  cb(layout);
+function calcInitialLayout(ctx, cb) {
+  ctx.book.getPage(1, (err, pg) => {
+    if(err) return cb(err);
+
+    const usable = 1 - (ctx.sz.margin/100);
+    let height = ctx.sz.boxh * usable;
+    let width = (pg.width * 2) * (height / pg.height);
+    const maxwidth = ctx.sz.boxw * usable;
+    if(width > maxwidth) {
+      width = maxwidth;
+      height = (pg.height) * (width / (pg.width * 2));
+    }
+
+    ctx.layout = {
+      top: (ctx.sz.boxh - height) / 2,
+      left: (ctx.sz.boxw - width) / 2,
+      mid: ctx.sz.boxw / 2,
+      width: width,
+      height,
+    };
+
+    cb();
+  });
 }
 
 /*    way/
