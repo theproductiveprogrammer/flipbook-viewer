@@ -124,10 +124,11 @@ function calcInitialLayout(ctx, cb) {
   ctx.book.getPage(1, (err, pg) => {
     if(err) return cb(err);
 
-    const usable = 1 - (ctx.sz.margin/100);
-    let height = ctx.sz.boxh * usable;
+    const usableH = 1 - (ctx.sz.marginTop/100);
+    let height = ctx.sz.boxh * usableH;
+    const usableW = 1 - (ctx.sz.marginLeft/100);
     let width = (pg.width * 2) * (height / pg.height);
-    const maxwidth = ctx.sz.boxw * usable;
+    const maxwidth = ctx.sz.boxw * usableW;
     if(width > maxwidth) {
       width = maxwidth;
       height = (pg.height) * (width / (pg.width * 2));

@@ -29,7 +29,6 @@ export function init(book, id, opts, cb) {
     },
     sz: {
       bx_border: opts.boxBorder || 0,
-      margin: opts.margin || 1,
       boxw: opts.width || 800,
       boxh: opts.height || 600,
     },
@@ -40,6 +39,12 @@ export function init(book, id, opts, cb) {
     app,
     book,
   };
+
+  const margin = opts.margin || 1;
+  if(opts.marginTop || opts.marginTop === 0) ctx.sz.marginTop = opts.marginTop;
+  else ctx.sz.marginTop = margin;
+  if(opts.marginLeft || opts.marginLeft === 0) ctx.sz.marginLeft = opts.marginLeft;
+  else ctx.sz.marginLeft = margin;
 
   if(opts.singlepage) singlePageViewer(ctx, ret_1);
   else flipbookViewer(ctx, ret_1);
