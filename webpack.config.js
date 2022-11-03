@@ -3,10 +3,6 @@ const path = require('path')
 
 const base = {
   entry: {
-    'test-imgs': './test/test-imgs.js',
-    'test-pdf': './test/test-pdf.js',
-    'test-imgs-sp': './test/test-imgs-sp.js',
-    'test-pdf-sp': './test/test-pdf-sp.js',
     'flipbook-viewer': {
       import: './src/index.js',
       library: {
@@ -39,6 +35,14 @@ const dev = Object.assign({}, base, {
     static: './test',
     allowedHosts: 'testing-page-flip.com',
   },
+
+  entry: Object.assign({
+    'test-imgs': './test/test-imgs.js',
+    'test-pdf': './test/test-pdf.js',
+    'test-imgs-sp': './test/test-imgs-sp.js',
+    'test-pdf-sp': './test/test-pdf-sp.js',
+  }, base.entry),
+
 })
 
 const prod = Object.assign({}, base, {
