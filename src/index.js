@@ -32,10 +32,6 @@ export function init(book, id, opts, cb) {
       boxw: opts.width || 800,
       boxh: opts.height || 600,
     },
-    downloadurl: opts.downloadurl,
-    toolbar: {
-      hidesavebtn: opts.hidesavebtn,
-    },
     app,
     book,
   };

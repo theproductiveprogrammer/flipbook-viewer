@@ -115,7 +115,6 @@ function showPages(ctx, viewer) {
       if(err) return cb(err);
       const layout = Object.assign({}, ctx.layout);
       layout.offsetTop = layout.fullHeight * (num-1) + layout.offsetTop;
-      viewer.emit('seen', num);
       canvas.ctx.drawImage(pg.img, layout.offsetLeft, layout.offsetTop, layout.width, layout.height)
       cb();
     })
