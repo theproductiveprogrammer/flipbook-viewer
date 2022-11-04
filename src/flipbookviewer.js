@@ -15,7 +15,7 @@ export function flipbookViewer(ctx, cb) {
   setupCanvas(ctx, err => {
     if(err) return cb(err);
 
-    calcInitialLayout(ctx, err => {
+    calcLayoutParameters(ctx, err => {
       if(err) return cb(err);
 
       ctx.app.c(ctx.canvas.e);
@@ -120,7 +120,7 @@ function setupCanvas(ctx, cb) {
  * use the first page to calculate enough space
  * for showing a double-page view.
  */
-function calcInitialLayout(ctx, cb) {
+function calcLayoutParameters(ctx, cb) {
   ctx.book.getPage(1, (err, pg) => {
     if(err) return cb(err);
 
