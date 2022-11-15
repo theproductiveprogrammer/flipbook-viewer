@@ -12,6 +12,7 @@ export function init(pdflink, cb) {
     .then(pdf => {
       warm_cache_1(pdf, 1)
       cb(null, {
+        pdf,
         numPages: () => pdf.numPages,
         getPage: (n, cb) => get_page_1(pdf, n, cb)
       })
