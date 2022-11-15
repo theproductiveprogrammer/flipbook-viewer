@@ -39,7 +39,6 @@ const dev = Object.assign({}, base, {
   entry: Object.assign({
     'test-imgs': './test/test-imgs.js',
     'test-pdf': './test/test-pdf.js',
-    'test-imgs-sp': './test/test-imgs-sp.js',
     'test-pdf-sp': './test/test-pdf-sp.js',
   }, base.entry),
 
