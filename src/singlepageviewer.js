@@ -5,26 +5,60 @@ import * as EventEmitter from 'events';
 class SinglePageViewer extends EventEmitter {};
 
 /*    way/
- * set up the canvas and the toolbar, then show the
- * first page
+ * Set up a viewer container and generate all
+ * the pages within that container.
  */
 export function singlePageViewer(ctx, cb) {
   const viewer = new SinglePageViewer();
   viewer.page_count = ctx.book.numPages();
 
-  calcLayoutParameters(ctx, err => {
+  setupCont(ctx, err => {
     if(err) return cb(err);
 
-    setupCanvas(ctx, err => {
+    generatePages(ctx, err => {
       if(err) return cb(err);
-
-      ctx.app.c(ctx.canvas.e);
-
-      cb(null, viewer);
-
-      showPages(ctx, viewer);
-
+      else return cb(null, viewer);
     });
+
+  });
+}
+
+/*    way/
+ * Create a temporary "page" to get the
+ * expected size (width) of the pages set
+ * by the CSS
+ */
+function setupCont(ctx, cb) {
+  const tst = h("canvas.flipbook__page");
+  ctx.app.c(tst);
+  setTimeout(() => {
+    ctx.page_width = tst.getBoundingClientRect().width;
+    ctx.app.rm(tst);
+    cb();
+  });
+}
+
+function generatePages(ctx, cb) {
+  console.log(ctx)
+  gen_pg_1(0);
+
+  function gen_pg_1(ndx) {
+    if(ndx >= ctx.book.numPages()) return cb();
+
+  }
+}
+
+
+/*
+
+  setupCanvas(ctx, err => {
+    if(err) return cb(err);
+
+    ctx.app.c(ctx.canvas.e);
+
+    cb(null, viewer);
+
+    showPages(ctx, viewer);
 
   });
 
@@ -32,34 +66,31 @@ export function singlePageViewer(ctx, cb) {
 
 
 /*    way/
- * set up a canvas element with the width and height
- */
-function setupCanvas(ctx, cb) {
-  const canvas = {
-    e: h("canvas")
-  };
-  canvas.ctx = canvas.e.getContext('2d');
-  canvas.e.width = ctx.sz.boxw;
-  canvas.e.height = ctx.layout.totHeight;
-
-  ctx.canvas = canvas;
-
-  cb();
-}
-
-/*    way/
  * walk the pages and calculate the various parameters
  * of the view from the first page and number of pages
  */
-function calcLayoutParameters(ctx, cb) {
+function setupCanvas(ctx, cb) {
+  const canvas = { e: h("canvas") };
+
   ctx.book.getPage(1, (err, pg) => {
+    if(err) return cb(err);
+
+    const scale = 4.0;
+    const viewport = pg.page.getViewport({ scale });
+
+    const outputScale = window.devicePixelRatio || 1;
 
     const mT = ctx.sz.marginTop/100;
     const mL = ctx.sz.marginLeft/100;
-    const usableW = 1 - mL*2;
 
-    const width = ctx.sz.boxw * usableW;
-    const height = pg.height * (width / pg.width);
+    canvas.e.width = Math.floor(viewport.width * outputScale);
+    canvas.e.height = Math.floor(viewport.height * outputScale);
+    canvas.e.style.width = Math.floor(viewport.width) + "px";
+    canvas.e.style.height =  Math.floor(viewport.height) + "px";
+    canvas.ctx = canvas.e.getContext("2d");
+
+    const width = viewport.width;
+    const height = viewport.height;
 
     const offsetTop = ctx.sz.boxw * mT;
     const offsetLeft = ctx.sz.boxw * mL;
@@ -74,10 +105,11 @@ function calcLayoutParameters(ctx, cb) {
       height,
       fullHeight,
       totHeight,
+      outputScale,
     };
 
+    ctx.canvas = canvas;
     cb();
-
   });
 }
 
