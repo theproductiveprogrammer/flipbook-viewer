@@ -1,6 +1,6 @@
 {
   "name": "flipbook-viewer",
-  "version": "1.5.1",
+  "version": "1.6.0",
   "description": "Amazing Page Flip Animation for a (PDF/Image Collection) Flipbook viewer",
   "main": "dist/flipbook-viewer.js",
   "scripts": {
