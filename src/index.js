@@ -23,27 +23,34 @@ export function init(book, id, opts, cb) {
     return;
   }
 
-  const ctx = {
-    color: {
-      bg: opts.backgroundColor || "#353535",
-    },
-    sz: {
-      bx_border: opts.boxBorder || 0,
-      boxw: opts.width || 800,
-      boxh: opts.height || 600,
-    },
-    app,
-    book,
-  };
+  if(opts.singlepage) {
 
-  const margin = opts.margin || 1;
-  if(opts.marginTop || opts.marginTop === 0) ctx.sz.marginTop = opts.marginTop;
-  else ctx.sz.marginTop = margin;
-  if(opts.marginLeft || opts.marginLeft === 0) ctx.sz.marginLeft = opts.marginLeft;
-  else ctx.sz.marginLeft = margin;
+    singlePageViewer({ app, book }, ret_1);
 
-  if(opts.singlepage) singlePageViewer(ctx, ret_1);
-  else flipbookViewer(ctx, ret_1);
+  } else {
+
+    const ctx = {
+      color: {
+        bg: opts.backgroundColor || "#353535",
+      },
+      sz: {
+        bx_border: opts.boxBorder || 0,
+        boxw: opts.width || 800,
+        boxh: opts.height || 600,
+      },
+      app,
+      book,
+    };
+
+    const margin = opts.margin || 1;
+    if(opts.marginTop || opts.marginTop === 0) ctx.sz.marginTop = opts.marginTop;
+    else ctx.sz.marginTop = margin;
+    if(opts.marginLeft || opts.marginLeft === 0) ctx.sz.marginLeft = opts.marginLeft;
+    else ctx.sz.marginLeft = margin;
+
+    flipbookViewer(ctx, ret_1);
+  }
+
 
   function ret_1(err, viewer) {
     if(opts.popup) history.pushState({}, "", "#");
