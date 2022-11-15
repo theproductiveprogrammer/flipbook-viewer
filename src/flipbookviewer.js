@@ -4,6 +4,8 @@ import * as EventEmitter from 'events';
 
 class FlipbookViewer extends EventEmitter {};
 
+const outputScale = window.devicePixelRatio || 1; // Support HiDPI-screens
+
 /*    way/
  * set up the canvas and the toolbar, return the viewer,
  * then show the first page
@@ -108,9 +110,12 @@ function setupCanvas(ctx, cb) {
   const canvas = {
     e: h("canvas")
   };
+
   canvas.ctx = canvas.e.getContext('2d');
-  canvas.e.width = ctx.sz.boxw;
-  canvas.e.height = ctx.sz.boxh;
+  canvas.e.width = Math.floor(ctx.sz.boxw * outputScale);
+  canvas.e.height = Math.floor(ctx.sz.boxh * outputScale);
+  canvas.e.style.width = Math.floor(ctx.sz.boxw) + "px";
+  canvas.e.style.height = Math.floor(ctx.sz.boxh) + "px";
 
   ctx.canvas = canvas;
   cb();
@@ -121,23 +126,26 @@ function setupCanvas(ctx, cb) {
  * for showing a double-page view.
  */
 function calcLayoutParameters(ctx, cb) {
+  const w = ctx.sz.boxw * outputScale;
+  const h = ctx.sz.boxh * outputScale;
+
   ctx.book.getPage(1, (err, pg) => {
     if(err) return cb(err);
 
     const usableH = 1 - (ctx.sz.marginTop/100);
-    let height = ctx.sz.boxh * usableH;
+    let height = h * usableH;
     const usableW = 1 - (ctx.sz.marginLeft/100);
     let width = (pg.width * 2) * (height / pg.height);
-    const maxwidth = ctx.sz.boxw * usableW;
+    const maxwidth = w * usableW;
     if(width > maxwidth) {
       width = maxwidth;
       height = (pg.height) * (width / (pg.width * 2));
     }
 
     ctx.layout = {
-      top: (ctx.sz.boxh - height) / 2,
-      left: (ctx.sz.boxw - width) / 2,
-      mid: ctx.sz.boxw / 2,
+      top: (h - height) / 2,
+      left: (w - width) / 2,
+      mid: w / 2,
       width: width,
       height,
     };
@@ -329,8 +337,9 @@ function showPages(ctx, viewer) {
   }
 
   function show_bg_1() {
+
     canvas.ctx.fillStyle = ctx.color.bg;
-    canvas.ctx.fillRect(0, 0, ctx.sz.boxw, ctx.sz.boxh);
+    canvas.ctx.fillRect(0, 0, ctx.sz.boxw*outputScale, ctx.sz.boxh*outputScale);
   }
 }
 
