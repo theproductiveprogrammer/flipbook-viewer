@@ -5,8 +5,9 @@ import * as EventEmitter from 'events';
 class SinglePageViewer extends EventEmitter {};
 
 /*    way/
- * Set up a viewer container and generate all
- * the pages within that container.
+ * Set up a viewer container, generate all
+ * the pages within that container, and set up
+ * the interesection observer to raise 'seen' events
  */
 export function singlePageViewer(ctx, cb) {
   const viewer = new SinglePageViewer();
@@ -17,10 +18,39 @@ export function singlePageViewer(ctx, cb) {
 
     generatePages(ctx, err => {
       if(err) return cb(err);
-      else return cb(null, viewer);
+      cb(null, viewer);
+      setupSeenEvents(ctx, viewer);
     });
 
   });
+}
+
+function setupSeenEvents(ctx, viewer) {
+  const seen = {};
+  const observer = new IntersectionObserver(pg_seen_1, {
+    root: null,
+    rootMargin: "0px",
+    threshold: 0.25,
+  });
+
+  ctx.pages.forEach(p => observer.observe(p));
+
+
+  function pg_seen_1(entries) {
+    entries.forEach(e => {
+      if(e.intersectionRatio) {
+        try {
+          const page = e.target.dataset.flipbookPage;
+          if(seen[page]) return;
+          seen[page] = true;
+          viewer.emit("seen", page);
+        } catch(e) {
+          console.error(e);
+        }
+      }
+    });
+  }
+
 }
 
 const newpage = n => h(`canvas#flipbook__pgnum_${n}.flipbook__page`);
@@ -40,13 +70,14 @@ function setupCont(ctx, cb) {
 }
 
 /*    way/
- * generate a correctly scaled canvas for each page, render the pdf to
- * it and and it to the app.
+ * generate a correctly scaled canvas for each page, add it the app
+ * and render the pdf to it.
  */
 function generatePages(ctx, cb) {
   const outputScale = window.devicePixelRatio || 1; // Support HiDPI-screens
   const pdf = ctx.book.pdf;
 
+  ctx.pages = [];
   gen_pg_1(0);
 
   function gen_pg_1(ndx) {
@@ -62,10 +93,14 @@ function generatePages(ctx, cb) {
         const viewport = page.getViewport({scale});
 
         const canvas = newpage(num);
+        canvas.attr({ "data-flipbook-page": num });
+
         canvas.width = Math.floor(viewport.width * outputScale);
         canvas.height = Math.floor(viewport.height * outputScale);
         canvas.style.width = Math.floor(viewport.width) + "px";
         canvas.style.height =  Math.floor(viewport.height) + "px";
+
+        ctx.pages.push(canvas);
         ctx.app.add(canvas);
 
         const transform = outputScale !== 1
