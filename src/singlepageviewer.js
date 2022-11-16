@@ -39,6 +39,10 @@ function setupCont(ctx, cb) {
   });
 }
 
+/*    way/
+ * generate a correctly scaled canvas for each page, render the pdf to
+ * it and and it to the app.
+ */
 function generatePages(ctx, cb) {
   const outputScale = window.devicePixelRatio || 1; // Support HiDPI-screens
   const pdf = ctx.book.pdf;
