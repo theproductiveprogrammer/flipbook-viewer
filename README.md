@@ -92,19 +92,15 @@ viewer.zoom()
 
 ## Single Page View
 
-Finally, sometimes it makes sense to just show the book as a simple, scrollable view. To do this set the `singlepage` option:
+Finally, sometimes it makes sense to just show the book as a simple, scrollable view. To pass in only a `singlepage:true` option:
 
 ```js
-const opts = {
-  width: 800,
-  height: 600,
-  singlepage: true,
-  marginTop: 5,   /* percent */
-  marginLeft: 2,  /* percent */
-}
-
-flipbook(book, 'div-id', opts, (err, viewer) => ...
+flipbook(book, 'div-id', {singlepage:true}, (err, viewer) => ...
 ```
+
+This will generate a series of canvases with `class="flipbook__page"` and `id="flipbook__pgnum_<n>"` that you can style using CSS. The single page view will raise the same `seen` event that the flipbook viewer does for tracking which pages the user actually flips through.
+
+The single page viewer is currently experimental and very simple. It should work for many PDF's but is not optimized for handling PDF's with a large number of pages.
 
 
 Enjoy!
