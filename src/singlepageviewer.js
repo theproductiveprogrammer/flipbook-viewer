@@ -23,14 +23,14 @@ export function singlePageViewer(ctx, cb) {
   });
 }
 
-const newpage = () => h("canvas.flipbook__page");
+const newpage = n => h(`canvas#flipbook__pgnum_${n}.flipbook__page`);
 /*    way/
  * Create a temporary "page" to get the
  * expected size (width) of the pages set
  * by the CSS
  */
 function setupCont(ctx, cb) {
-  const tmp = newpage();
+  const tmp = newpage(0);
   ctx.app.c(tmp);
   setTimeout(() => {
     ctx.page_width = tmp.getBoundingClientRect().width;
@@ -52,14 +52,16 @@ function generatePages(ctx, cb) {
   function gen_pg_1(ndx) {
     if(ndx >= pdf.numPages) return cb();
 
-    pdf.getPage(ndx+1)
+    const num = ndx+1;
+
+    pdf.getPage(num)
       .then(page => {
         const coresz = page.getViewport({scale:1});
         const scale = ctx.page_width / coresz.width;
 
         const viewport = page.getViewport({scale});
 
-        const canvas = newpage();
+        const canvas = newpage(num);
         canvas.width = Math.floor(viewport.width * outputScale);
         canvas.height = Math.floor(viewport.height * outputScale);
         canvas.style.width = Math.floor(viewport.width) + "px";
@@ -78,8 +80,8 @@ function generatePages(ctx, cb) {
         }
         page.render(renderContext).promise
           .then(() => gen_pg_1(ndx+1))
-          .catch(err => cb(err || "Failed rendering page" + (ndx+1)))
+          .catch(err => cb(err || "Failed rendering page" + num))
       })
-      .catch(err => cb(err || "Failed getting page:" + (ndx+1)))
+      .catch(err => cb(err || "Failed getting page:" + num))
   }
 }
