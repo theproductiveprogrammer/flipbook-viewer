@@ -12,6 +12,14 @@ const base = {
       },
     },
     'pdf.worker': 'pdfjs-dist/build/pdf.worker.entry',
+    'book.pdf': {
+      import: './test/book-pdf.js',
+      library: {
+        name: 'book',
+        type: 'umd',
+        umdNamedDefine: true,
+      },
+    },
   },
   output: {
     filename: '[name].js',
