@@ -14,19 +14,19 @@
   <button id="next">Next</button>
   <button id="zoom">Zoom</button>
 
-  <!-- โหลดไฟล์ที่ build แล้ว -->
+  <!-- Load the built files -->
   <script src="dist/pdf.worker.js"></script>
   <script src="dist/flipbook-viewer.js"></script>
   <script src="dist/book.pdf.js"></script>
   <script>
-    // ใช้งานแบบ Vanilla JS
+    // Apply to Vanilla JS
     const opts = { width: 800, height: 600 };
     const app = document.getElementById('app');
     const next = document.getElementById('next');
     const prev = document.getElementById('prev');
     const zoom = document.getElementById('zoom');
 
-    // ใช้ book.init จาก book-pdf.bundle.js
+    // ใช้ book.init จาก book.pdf.js
     book.init('sample-local-pdf.pdf', function(err, bookObj) {
       if (err) return console.error(err);
       flipbook.init(bookObj, app, opts, function(err, viewer) {
