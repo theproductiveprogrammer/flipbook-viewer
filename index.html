@@ -26,7 +26,7 @@
     const prev = document.getElementById('prev');
     const zoom = document.getElementById('zoom');
 
-    // ใช้ book.init จาก book.pdf.js
+    // using book.init from book.pdf.js
     book.init('sample-local-pdf.pdf', function(err, bookObj) {
       if (err) return console.error(err);
       flipbook.init(bookObj, app, opts, function(err, viewer) {
